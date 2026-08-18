@@ -150,7 +150,7 @@ export function setSetting(key: string, value: string | number) {
 
 export function settingsSnapshot() {
   const rows = all<{ key: string; value: string }>('SELECT key, value FROM settings');
-  const merged: Record<string, string> = { ...(DEFAULTS as Record<string, number> as Record<string, string>) };
+  const merged: Record<string, string> = { ...(DEFAULTS as unknown as Record<string, string>) };
   for (const r of rows) merged[r.key] = r.value;
   return merged;
 }
