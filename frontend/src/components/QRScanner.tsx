@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 
 interface Props {
@@ -10,23 +10,32 @@ export default function QRScanner({ onResult, hint }: Props) {
   const regionId = 'qr-scanner-region';
   const [error, setError] = useState('');
   const [manual, setManual] = useState('');
-  const startedRef = useRef(false);
 
   useEffect(() => {
-    if (startedRef.current) return;
-    startedRef.current = true;
     let scanner: Html5Qrcode | null = null;
-    let stopped = false;
+    const stopScanner = () => {
+      if (!scanner) return;
+      try {
+        scanner.stop();
+      } catch {
+        /* kamera belum berjalan */
+      }
+      try {
+        scanner.clear();
+      } catch {
+        /* abaikan */
+      }
+    };
 
     const init = async () => {
+      scanner = new Html5Qrcode(regionId);
       try {
-        scanner = new Html5Qrcode(regionId);
         await scanner.start(
           { facingMode: 'environment' },
           { fps: 10, qrbox: { width: 230, height: 230 } },
           (text) => {
-            if (!stopped) onResult(text);
-            scanner?.stop().catch(() => undefined);
+            onResult(text);
+            stopScanner();
           },
           () => undefined,
         );
@@ -36,11 +45,7 @@ export default function QRScanner({ onResult, hint }: Props) {
     };
     init();
 
-    return () => {
-      stopped = true;
-      scanner?.stop().catch(() => undefined);
-      scanner?.clear();
-    };
+    return stopScanner;
   }, [onResult]);
 
   return (
