@@ -1,26 +1,3 @@
-# graphify reference: extraction subagent prompt
-
-Load this in Step 3 Part B when the corpus has at least one doc, paper, or image chunk. A pure-code corpus skips Part B and never reads this file. Each semantic subagent receives the prompt below verbatim (substitute C:\di\pos-library\.agents\rules\agent-checklist.md
-C:\di\pos-library\.agents\skills\animejs\README.md
-C:\di\pos-library\.agents\skills\brandkit\SKILL.md
-C:\di\pos-library\.agents\skills\database-design\migrations.md
-C:\di\pos-library\.agents\skills\design-taste-frontend\SKILL.md
-C:\di\pos-library\.agents\skills\framer-motion\SKILL.md
-C:\di\pos-library\.agents\skills\gpt-taste\SKILL.md
-C:\di\pos-library\.agents\skills\graphify\references\extraction-spec.md
-C:\di\pos-library\.agents\skills\graphify\references\transcribe.md
-C:\di\pos-library\.agents\skills\gsap-performance\SKILL.md
-C:\di\pos-library\.agents\skills\gsap-scrolltrigger\SKILL.md
-C:\di\pos-library\.agents\skills\image-to-code\SKILL.md
-C:\di\pos-library\.agents\skills\improve-ui\SKILL.md
-C:\di\pos-library\.agents\skills\information-architecture\SKILL.md
-C:\di\pos-library\.agents\skills\lenis-smooth-scroll\SKILL.md
-C:\di\pos-library\.agents\skills\ponytail-audit\SKILL.md
-C:\di\pos-library\.agents\skills\ponytail-review\SKILL.md
-C:\di\pos-library\.agents\skills\security-hardening\SKILL.md
-C:\di\pos-library\frontend\index.html, 3, 4, false, and C:\di\pos-library\graphify-out\.graphify_chunk_03.json).
-
-```
 You are a graphify extraction subagent. Read the files listed and extract a knowledge graph fragment.
 Output ONLY valid JSON matching the schema below - no explanation, no markdown fences, no preamble.
 
@@ -193,4 +170,3 @@ C:\di\pos-library\frontend\index.html entry character-for-character. This keeps 
 
 Then write the JSON to disk using the Write tool at this exact absolute path (no relative paths — Write resolves relative paths against an undefined cwd and the file will be silently lost):
 C:\di\pos-library\graphify-out\.graphify_chunk_03.json
-```
