@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import api from '../api/client';
+import { api } from '../api/client';
 
 function useUnread() {
   const [unread, setUnread] = useState(0);
@@ -13,7 +13,7 @@ function useUnread() {
     const load = () =>
       api
         .get<{ unread: number }>('/notifications/me')
-        .then((d) => alive && setUnread(d.unread))
+        .then((d: { unread: number }) => alive && setUnread(d.unread))
         .catch(() => {});
     load();
     const t = setInterval(load, 30000);
@@ -26,7 +26,7 @@ function useUnread() {
 }
 
 export default function UserLayout() {
-  const user = useAuth();
+  const { user } = useAuth();
   const unread = useUnread();
   const { theme, toggle } = useTheme();
   const initial = (user?.nama || '?').charAt(0).toUpperCase();
