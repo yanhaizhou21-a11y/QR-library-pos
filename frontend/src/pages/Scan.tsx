@@ -6,17 +6,13 @@ import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { Cover, StatusBadge, rupiah, fmtDate } from '../components/ui';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import {
   QrCode,
   CheckCircle2,
   AlertCircle,
-  Clock,
-  BookOpen,
   UserCheck,
-  RotateCcw,
   Sparkles,
-  ArrowRight,
   Info,
 } from 'lucide-react';
 
