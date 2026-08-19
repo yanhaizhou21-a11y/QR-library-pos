@@ -1,137 +1,107 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import {
+  QrCode,
   Download,
   Copy,
+  Check,
   Printer,
   Sparkles,
   BookOpen,
   User,
+  Layers,
   Wifi,
-  Tag,
-  Link2,
-  Check,
-  RefreshCw,
-  Eye,
+  Globe,
+  Sliders,
 } from 'lucide-react';
-import { api } from '@/api/client';
+import { api, Book } from '../../api/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
-type Mode = 'book' | 'member' | 'shelf' | 'wifi' | 'custom';
+type QRPreset = 'book' | 'member' | 'shelf' | 'wifi' | 'custom';
 
 export default function AdminQRGenerator() {
-  const [mode, setMode] = useState<Mode>('book');
-  const [books, setBooks] = useState<any[]>([]);
-  const [members, setMembers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [preset, setPreset] = useState<QRPreset>('book');
+  const [books, setBooks] = useState<Book[]>([]);
+  const [selectedBookId, setSelectedBookId] = useState<number | string>('');
+  const [memberIdInput, setMemberIdInput] = useState('1001');
+  const [shelfCode, setShelfCode] = useState('RAK-TECH-01');
+  const [wifiSsid, setWifiSsid] = useState('Perpustakaan_Guest_WiFi');
+  const [wifiPass, setWifiPass] = useState('pustaka2026');
+  const [customText, setCustomText] = useState('https://pustaka.id/katalog');
+
+  // Customization
+  const [fgColor, setFgColor] = useState('#0f172a');
+  const [bgColor, setBgColor] = useState('#ffffff');
+  const [qrSize, setQrSize] = useState(240);
+  const [qrLevel, setQrLevel] = useState<'L' | 'M' | 'Q' | 'H'>('H');
+  const [includeLogo, setIncludeLogo] = useState(true);
   const [copied, setCopied] = useState(false);
 
-  // Form State
-  const [selectedBookId, setSelectedBookId] = useState<string>('');
-  const [customBookTitle, setCustomBookTitle] = useState<string>('');
-  const [selectedMemberId, setSelectedMemberId] = useState<string>('');
-  const [shelfCode, setShelfCode] = useState<string>('RAK-A-01');
-  const [shelfDesc, setShelfDesc] = useState<string>('Sains & Teknologi Komputer');
-  const [wifiSsid, setWifiSsid] = useState<string>('PustakaQR-Guest');
-  const [wifiPass, setWifiPass] = useState<string>('baca1234');
-  const [wifiType, setWifiType] = useState<string>('WPA');
-  const [customText, setCustomText] = useState<string>('https://pustaka.id');
-
-  // Styling State
-  const [qrFgColor, setQrFgColor] = useState<string>('#0f172a');
-  const [qrBgColor, setQrBgColor] = useState<string>('#ffffff');
-  const [qrSize, setQrSize] = useState<number>(260);
-  const [errorLevel, setErrorLevel] = useState<'L' | 'M' | 'Q' | 'H'>('H');
-  const [includeLogo, setIncludeLogo] = useState<boolean>(true);
-
-  // Hidden canvas for PNG export
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
   useEffect(() => {
-    setLoading(true);
-    Promise.all([
-      api.get<any>('/api/books?limit=50').catch(() => ({ books: [] })),
-      api.get<any>('/api/admin/members').catch(() => ({ members: [] })),
-    ]).then(([bData, mData]) => {
-      if (bData?.books) {
-        setBooks(bData.books);
-        if (bData.books.length > 0) setSelectedBookId(String(bData.books[0].id));
-      }
-      if (mData?.members) {
-        setMembers(mData.members);
-        if (mData.members.length > 0) setSelectedMemberId(String(mData.members[0].id));
-      }
-      setLoading(false);
-    });
+    api
+      .get<{ books: Book[] }>('/books?limit=100')
+      .then((d) => {
+        setBooks(d.books);
+        if (d.books.length > 0) {
+          setSelectedBookId(d.books[0].id);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Compute final QR payload
-  let qrPayload = '';
-  let previewTitle = '';
-  let previewSubtitle = '';
+  const getPayload = () => {
+    switch (preset) {
+      case 'book':
+        return `pustaka:book:${selectedBookId || '1'}`;
+      case 'member':
+        return `pustaka:member:${memberIdInput.trim() || '1'}`;
+      case 'shelf':
+        return `pustaka:shelf:${shelfCode.trim().toUpperCase() || 'RAK-01'}`;
+      case 'wifi':
+        return `WIFI:S:${wifiSsid};T:WPA;P:${wifiPass};;`;
+      case 'custom':
+      default:
+        return customText.trim() || 'https://pustaka.id';
+    }
+  };
 
-  if (mode === 'book') {
-    const b = books.find((x) => String(x.id) === selectedBookId);
-    const id = selectedBookId || '1';
-    qrPayload = `pustaka:book:${id}`;
-    previewTitle = b ? b.judul : (customBookTitle || `Buku #${id}`);
-    previewSubtitle = b ? `${b.penulis} • Rak: ${b.lokasi_rak || '-'}` : 'QR Label Buku Perpustakaan';
-  } else if (mode === 'member') {
-    const m = members.find((x) => String(x.id) === selectedMemberId);
-    const id = selectedMemberId || '1';
-    qrPayload = `pustaka:member:${id}`;
-    previewTitle = m ? m.nama : `Anggota #${id}`;
-    previewSubtitle = m ? `No. Anggota: ${m.no_anggota}` : 'Kartu Anggota Digital';
-  } else if (mode === 'shelf') {
-    qrPayload = `pustaka:shelf:${shelfCode}`;
-    previewTitle = `Rak: ${shelfCode}`;
-    previewSubtitle = shelfDesc;
-  } else if (mode === 'wifi') {
-    qrPayload = `WIFI:S:${wifiSsid};T:${wifiType};P:${wifiPass};;`;
-    previewTitle = `Wi-Fi: ${wifiSsid}`;
-    previewSubtitle = `Password: ${wifiPass} (${wifiType})`;
-  } else {
-    qrPayload = customText || 'pustaka:custom';
-    previewTitle = 'Custom QR Payload';
-    previewSubtitle = qrPayload;
-  }
+  const getLabelTitle = () => {
+    switch (preset) {
+      case 'book': {
+        const found = books.find((b) => String(b.id) === String(selectedBookId));
+        return found ? found.judul : `Buku #${selectedBookId}`;
+      }
+      case 'member':
+        return `Kartu Anggota #${memberIdInput}`;
+      case 'shelf':
+        return `Label Rak ${shelfCode.toUpperCase()}`;
+      case 'wifi':
+        return `Wi-Fi: ${wifiSsid}`;
+      case 'custom':
+      default:
+        return 'Custom QR Code';
+    }
+  };
 
-  // Handle PNG Download
   const handleDownloadPng = () => {
-    const canvas = document.getElementById('qr-canvas-download') as HTMLCanvasElement;
+    const canvas = document.getElementById('generator-canvas') as HTMLCanvasElement;
     if (!canvas) return;
     const url = canvas.toDataURL('image/png');
     const a = document.createElement('a');
-    a.download = `qr-${mode}-${Date.now()}.png`;
+    a.download = `pustaka-qr-${preset}-${Date.now()}.png`;
     a.href = url;
     a.click();
   };
 
-  // Handle SVG Download
-  const handleDownloadSvg = () => {
-    const svgEl = document.getElementById('qr-svg-preview');
-    if (!svgEl) return;
-    const svgData = new XMLSerializer().serializeToString(svgEl);
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(svgBlob);
-    const a = document.createElement('a');
-    a.download = `qr-${mode}-${Date.now()}.svg`;
-    a.href = url;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  // Handle Copy to Clipboard
   const handleCopy = async () => {
-    const canvas = document.getElementById('qr-canvas-download') as HTMLCanvasElement;
+    const canvas = document.getElementById('generator-canvas') as HTMLCanvasElement;
     if (!canvas) return;
     try {
       canvas.toBlob(async (blob) => {
         if (!blob) return;
-        await navigator.clipboard.write([
-          new ClipboardItem({ 'image/png': blob }),
-        ]);
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       });
@@ -140,478 +110,402 @@ export default function AdminQRGenerator() {
     }
   };
 
-  // Handle Print
   const handlePrint = () => {
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
-    const canvas = document.getElementById('qr-canvas-download') as HTMLCanvasElement;
+    const w = window.open('', '_blank');
+    if (!w) return;
+    const canvas = document.getElementById('generator-canvas') as HTMLCanvasElement;
     const dataUrl = canvas ? canvas.toDataURL('image/png') : '';
 
-    printWindow.document.write(`
+    w.document.write(`
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Cetak QR Code - ${previewTitle}</title>
+          <title>Cetak QR Code - Pustaka QR</title>
           <style>
-            body { font-family: 'Segoe UI', system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #fff; text-align: center; }
-            .badge { border: 2px dashed #0f172a; padding: 24px 32px; border-radius: 16px; display: inline-flex; flex-direction: column; align-items: center; }
-            .title { font-size: 20px; font-weight: 800; margin-top: 14px; color: #0f172a; max-width: 320px; }
-            .subtitle { font-size: 14px; color: #475569; margin-top: 4px; }
-            .payload { font-size: 11px; font-family: monospace; color: #94a3b8; margin-top: 8px; }
-            @media print { @page { size: auto; margin: 10mm; } }
+            body { font-family: 'Segoe UI', system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 90vh; margin: 0; }
+            .card { border: 2px dashed #0f172a; border-radius: 16px; padding: 24px; text-align: center; max-width: 320px; }
+            h2 { margin: 12px 0 4px; font-size: 16px; }
+            p { margin: 0; color: #64748b; font-size: 12px; font-family: monospace; }
           </style>
         </head>
         <body>
-          <div class="badge">
+          <div class="card">
             <img src="${dataUrl}" width="${qrSize}" height="${qrSize}" alt="QR" />
-            <div class="title">${previewTitle}</div>
-            <div class="subtitle">${previewSubtitle}</div>
-            <div class="payload">${qrPayload}</div>
+            <h2>${getLabelTitle()}</h2>
+            <p>${getPayload()}</p>
           </div>
-          <script>
-            window.onload = () => { window.print(); window.close(); }
-          </script>
+          <script>window.onload = function() { window.print(); }</script>
         </body>
       </html>
     `);
-    printWindow.document.close();
+    w.document.close();
   };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="bg-primary/10 text-primary p-1.5 rounded-lg">
-              <Sparkles className="size-5" />
-            </span>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              JavaScript QR Generator Studio
-            </h1>
-          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+            <QrCode className="size-6 text-primary" />
+            JavaScript QR Code Generator Studio
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Generate, customize, and batch export crisp QR codes in client-side JavaScript for library books, member passes, shelf markers, and access points.
+            Hasilkan QR code resolusi tinggi secara client-side untuk Buku, Kartu Anggota, Label Rak, atau Wi-Fi Perpustakaan.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={handlePrint} className="gap-1.5 shadow-xs">
             <Printer className="size-4" />
-            Print Label
+            Cetak Label
           </Button>
-          <Button variant="default" size="sm" onClick={handleDownloadPng} className="gap-1.5 shadow-xs">
+          <Button variant="default" size="sm" onClick={handleDownloadPng} className="gap-1.5 shadow-xs font-semibold">
             <Download className="size-4" />
-            Download PNG
+            Unduh PNG HD
           </Button>
         </div>
       </div>
 
-      {/* Mode Selector Pill Bar */}
-      <div className="flex flex-wrap gap-2 p-1.5 bg-secondary/80 rounded-2xl border border-border/60 max-w-3xl">
-        <button
-          onClick={() => setMode('book')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-            mode === 'book'
-              ? 'bg-background text-primary shadow-xs font-semibold'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <BookOpen className="size-4" />
-          Book Label
-        </button>
-        <button
-          onClick={() => setMode('member')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-            mode === 'member'
-              ? 'bg-background text-primary shadow-xs font-semibold'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <User className="size-4" />
-          Member Card Pass
-        </button>
-        <button
-          onClick={() => setMode('shelf')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-            mode === 'shelf'
-              ? 'bg-background text-primary shadow-xs font-semibold'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <Tag className="size-4" />
-          Shelf Tag
-        </button>
-        <button
-          onClick={() => setMode('wifi')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-            mode === 'wifi'
-              ? 'bg-background text-primary shadow-xs font-semibold'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <Wifi className="size-4" />
-          Wi-Fi Pass
-        </button>
-        <button
-          onClick={() => setMode('custom')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-            mode === 'custom'
-              ? 'bg-background text-primary shadow-xs font-semibold'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <Link2 className="size-4" />
-          Custom Text / URL
-        </button>
-      </div>
-
+      {/* Main Studio Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left: Input & Customization Controls */}
+        {/* Left Options Controls */}
         <div className="lg:col-span-7 space-y-6">
+          {/* Preset Selector */}
           <Card className="rounded-2xl border-border shadow-xs">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-base font-semibold">1. Data Payload Configuration</CardTitle>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-bold flex items-center gap-2">
+                <Layers className="size-4 text-primary" />
+                Pilih Tipe / Format Preset
+              </CardTitle>
               <CardDescription className="text-xs">
-                Select the entity or enter the parameter for the generated QR identifier.
+                Sistem akan secara otomatis menyusun skema URI protokol resmi Pustaka QR.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 pt-0">
-              {mode === 'book' && (
-                <div className="space-y-3">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Select Catalog Book
-                  </label>
-                  <select
-                    value={selectedBookId}
-                    onChange={(e) => setSelectedBookId(e.target.value)}
-                    className="w-full bg-input border border-border rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    {books.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.judul} — {b.penulis} (ID: {b.id})
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-muted-foreground">
-                    QR Format: <code className="font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded">pustaka:book:{selectedBookId || 'ID'}</code>
-                  </p>
-                </div>
-              )}
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPreset('book')}
+                  className={`p-3 rounded-xl border text-left transition-all ${
+                    preset === 'book'
+                      ? 'border-primary bg-primary/10 text-primary font-bold shadow-xs'
+                      : 'border-border bg-card text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <BookOpen className="size-4 mb-1.5" />
+                  <div className="text-xs font-semibold">Stiker Buku</div>
+                  <div className="text-[10px] opacity-75 font-mono">pustaka:book:&lt;id&gt;</div>
+                </button>
 
-              {mode === 'member' && (
-                <div className="space-y-3">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Select Member
-                  </label>
-                  <select
-                    value={selectedMemberId}
-                    onChange={(e) => setSelectedMemberId(e.target.value)}
-                    className="w-full bg-input border border-border rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    {members.map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.nama} — {m.no_anggota} ({m.email})
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-muted-foreground">
-                    QR Format: <code className="font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded">pustaka:member:{selectedMemberId || 'ID'}</code>
-                  </p>
-                </div>
-              )}
+                <button
+                  type="button"
+                  onClick={() => setPreset('member')}
+                  className={`p-3 rounded-xl border text-left transition-all ${
+                    preset === 'member'
+                      ? 'border-primary bg-primary/10 text-primary font-bold shadow-xs'
+                      : 'border-border bg-card text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <User className="size-4 mb-1.5" />
+                  <div className="text-xs font-semibold">Kartu Anggota</div>
+                  <div className="text-[10px] opacity-75 font-mono">pustaka:member:&lt;id&gt;</div>
+                </button>
 
-              {mode === 'shelf' && (
-                <div className="space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                        Shelf Code
-                      </label>
-                      <input
-                        type="text"
-                        value={shelfCode}
-                        onChange={(e) => setShelfCode(e.target.value)}
-                        placeholder="e.g. RAK-A-01"
-                        className="w-full bg-input border border-border rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-primary font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                        Category / Location
-                      </label>
-                      <input
-                        type="text"
-                        value={shelfDesc}
-                        onChange={(e) => setShelfDesc(e.target.value)}
-                        placeholder="e.g. Artificial Intelligence"
-                        className="w-full bg-input border border-border rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
-                      />
-                    </div>
+                <button
+                  type="button"
+                  onClick={() => setPreset('shelf')}
+                  className={`p-3 rounded-xl border text-left transition-all ${
+                    preset === 'shelf'
+                      ? 'border-primary bg-primary/10 text-primary font-bold shadow-xs'
+                      : 'border-border bg-card text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Layers className="size-4 mb-1.5" />
+                  <div className="text-xs font-semibold">Label Rak</div>
+                  <div className="text-[10px] opacity-75 font-mono">pustaka:shelf:&lt;kode&gt;</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setPreset('wifi')}
+                  className={`p-3 rounded-xl border text-left transition-all ${
+                    preset === 'wifi'
+                      ? 'border-primary bg-primary/10 text-primary font-bold shadow-xs'
+                      : 'border-border bg-card text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Wifi className="size-4 mb-1.5" />
+                  <div className="text-xs font-semibold">Akses Wi-Fi</div>
+                  <div className="text-[10px] opacity-75 font-mono">WIFI:S:SSID...</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setPreset('custom')}
+                  className={`p-3 rounded-xl border text-left transition-all ${
+                    preset === 'custom'
+                      ? 'border-primary bg-primary/10 text-primary font-bold shadow-xs'
+                      : 'border-border bg-card text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Globe className="size-4 mb-1.5" />
+                  <div className="text-xs font-semibold">URL / Bebas</div>
+                  <div className="text-[10px] opacity-75 font-mono">Custom Payload</div>
+                </button>
+              </div>
+
+              {/* Dynamic Payload Form */}
+              <div className="mt-5 pt-4 border-t border-border space-y-4">
+                {preset === 'book' && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-semibold text-muted-foreground">Pilih Buku Terdaftar</label>
+                    <select
+                      value={selectedBookId}
+                      onChange={(e) => setSelectedBookId(e.target.value)}
+                      className="w-full bg-input border border-border rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      {books.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          #{b.id} - {b.judul} ({b.penulis}) [Rak: {b.lokasi_rak || '-'}]
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                </div>
-              )}
+                )}
 
-              {mode === 'wifi' && (
-                <div className="space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {preset === 'member' && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-semibold text-muted-foreground">ID / Nomor Anggota</label>
+                    <input
+                      value={memberIdInput}
+                      onChange={(e) => setMemberIdInput(e.target.value)}
+                      placeholder="contoh: 1001 atau 42"
+                      className="w-full bg-input border border-border rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-primary font-mono"
+                    />
+                  </div>
+                )}
+
+                {preset === 'shelf' && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-semibold text-muted-foreground">Kode Identitas Rak</label>
+                    <input
+                      value={shelfCode}
+                      onChange={(e) => setShelfCode(e.target.value)}
+                      placeholder="RAK-TECH-01"
+                      className="w-full bg-input border border-border rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-primary font-mono"
+                    />
+                  </div>
+                )}
+
+                {preset === 'wifi' && (
+                  <div className="space-y-3">
                     <div>
-                      <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                        Wi-Fi SSID
-                      </label>
+                      <label className="block text-xs font-semibold text-muted-foreground mb-1">Nama Jaringan Wi-Fi (SSID)</label>
                       <input
-                        type="text"
                         value={wifiSsid}
                         onChange={(e) => setWifiSsid(e.target.value)}
+                        placeholder="Perpustakaan_WiFi"
                         className="w-full bg-input border border-border rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                        Password
-                      </label>
+                      <label className="block text-xs font-semibold text-muted-foreground mb-1">Password Wi-Fi</label>
                       <input
-                        type="text"
                         value={wifiPass}
                         onChange={(e) => setWifiPass(e.target.value)}
-                        className="w-full bg-input border border-border rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-primary font-mono"
+                        placeholder="Password..."
+                        className="w-full bg-input border border-border rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {mode === 'custom' && (
-                <div className="space-y-3">
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                    Custom Text or URL
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={customText}
-                    onChange={(e) => setCustomText(e.target.value)}
-                    placeholder="Enter any text, deep link, or URL..."
-                    className="w-full bg-input border border-border rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-primary font-mono"
-                  />
-                </div>
-              )}
+                {preset === 'custom' && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-semibold text-muted-foreground">Teks / URL Bebas</label>
+                    <textarea
+                      value={customText}
+                      onChange={(e) => setCustomText(e.target.value)}
+                      rows={3}
+                      placeholder="https://..."
+                      className="w-full bg-input border border-border rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-primary font-mono"
+                    />
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
 
-          {/* Styling & Fine-tuning */}
+          {/* Style & Rendering Controls */}
           <Card className="rounded-2xl border-border shadow-xs">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-base font-semibold">2. Visual Design &amp; Export Parameters</CardTitle>
-              <CardDescription className="text-xs">
-                Fine-tune colors, size, error correction, and library logo stamp in real-time.
-              </CardDescription>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-bold flex items-center gap-2">
+                <Sliders className="size-4 text-primary" />
+                Kustomisasi Visual &amp; Error Correction
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 pt-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <CardContent className="pt-0 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                    QR Foreground Color
-                  </label>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Warna Barcode (Foreground)</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
-                      value={qrFgColor}
-                      onChange={(e) => setQrFgColor(e.target.value)}
-                      className="size-9 rounded-lg border border-border cursor-pointer bg-transparent"
+                      value={fgColor}
+                      onChange={(e) => setFgColor(e.target.value)}
+                      className="size-9 rounded-lg cursor-pointer border border-border bg-transparent"
                     />
                     <input
-                      type="text"
-                      value={qrFgColor}
-                      onChange={(e) => setQrFgColor(e.target.value)}
-                      className="flex-1 bg-input border border-border rounded-lg p-2 text-xs font-mono"
+                      value={fgColor}
+                      onChange={(e) => setFgColor(e.target.value)}
+                      className="w-full bg-input border border-border rounded-xl px-3 py-1.5 text-xs font-mono outline-none"
                     />
                   </div>
                 </div>
+
                 <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                    QR Background Color
-                  </label>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Warna Latar (Background)</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
-                      value={qrBgColor}
-                      onChange={(e) => setQrBgColor(e.target.value)}
-                      className="size-9 rounded-lg border border-border cursor-pointer bg-transparent"
+                      value={bgColor}
+                      onChange={(e) => setBgColor(e.target.value)}
+                      className="size-9 rounded-lg cursor-pointer border border-border bg-transparent"
                     />
                     <input
-                      type="text"
-                      value={qrBgColor}
-                      onChange={(e) => setQrBgColor(e.target.value)}
-                      className="flex-1 bg-input border border-border rounded-lg p-2 text-xs font-mono"
+                      value={bgColor}
+                      onChange={(e) => setBgColor(e.target.value)}
+                      className="w-full bg-input border border-border rounded-xl px-3 py-1.5 text-xs font-mono outline-none"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div className="grid grid-cols-2 gap-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                    Render Size ({qrSize}px)
-                  </label>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Ukuran Render: {qrSize}px</label>
                   <input
                     type="range"
-                    min="140"
-                    max="480"
-                    step="20"
+                    min={160}
+                    max={400}
+                    step={10}
                     value={qrSize}
                     onChange={(e) => setQrSize(Number(e.target.value))}
-                    className="w-full cursor-pointer accent-primary"
+                    className="w-full accent-primary cursor-pointer"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                    Error Correction
-                  </label>
-                  <select
-                    value={errorLevel}
-                    onChange={(e) => setErrorLevel(e.target.value as any)}
-                    className="w-full bg-input border border-border rounded-lg p-2 text-xs font-medium"
-                  >
-                    <option value="L">L (Low - 7%)</option>
-                    <option value="M">M (Medium - 15%)</option>
-                    <option value="Q">Q (Quartile - 25%)</option>
-                    <option value="H">H (High - 30% / With Logo)</option>
-                  </select>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Error Correction Level</label>
+                  <div className="flex gap-1">
+                    {(['L', 'M', 'Q', 'H'] as const).map((lvl) => (
+                      <button
+                        key={lvl}
+                        type="button"
+                        onClick={() => setQrLevel(lvl)}
+                        className={`flex-1 py-1 rounded-lg text-xs font-bold font-mono transition-all ${
+                          qrLevel === lvl
+                            ? 'bg-primary text-white shadow-xs'
+                            : 'bg-secondary text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {lvl}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-col justify-end">
-                  <label className="flex items-center gap-2 cursor-pointer pb-2">
-                    <input
-                      type="checkbox"
-                      checked={includeLogo}
-                      onChange={(e) => setIncludeLogo(e.target.checked)}
-                      className="size-4 rounded text-primary focus:ring-primary"
-                    />
-                    <span className="text-xs font-medium text-foreground">
-                      Include Center Stamp
-                    </span>
-                  </label>
-                </div>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between">
+                <span className="text-xs font-semibold text-muted-foreground">Sertakan Emblem Logo Perpustakaan di Tengah</span>
+                <button
+                  type="button"
+                  onClick={() => setIncludeLogo(!includeLogo)}
+                  className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${
+                    includeLogo ? 'bg-primary justify-end' : 'bg-muted justify-start'
+                  }`}
+                >
+                  <div className="bg-white size-4 rounded-full shadow-md" />
+                </button>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Right: Live Interactive Card Preview */}
-        <div className="lg:col-span-5 space-y-6">
-          <Card className="rounded-2xl border-border shadow-md bg-card overflow-hidden sticky top-24">
-            <CardHeader className="border-b border-border/60 pb-3 bg-muted/40 flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Eye className="size-4 text-primary" />
-                  Live Preview
-                </CardTitle>
-                <span className="text-[11px] text-muted-foreground font-mono">
-                  Payload: {qrPayload}
-                </span>
-              </div>
-              <span className="badge text-xs bg-primary/10 text-primary font-semibold">
-                Client-Side JS
+        {/* Right Live Preview Box */}
+        <div className="lg:col-span-5 flex flex-col items-center">
+          <Card className="rounded-3xl border-border shadow-md w-full max-w-sm overflow-hidden text-center p-6 space-y-5 bg-card">
+            <div className="space-y-1">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono uppercase bg-primary/10 text-primary">
+                <Sparkles className="size-3" />
+                Live Client-Side Preview
               </span>
-            </CardHeader>
-            <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-              {/* Styled Stamp Preview Container */}
-              <div
-                className="p-6 rounded-2xl border-2 border-border/80 shadow-lg flex flex-col items-center justify-center transition-all bg-white"
-                style={{ backgroundColor: qrBgColor }}
-              >
-                <div className="relative">
-                  <QRCodeSVG
-                    id="qr-svg-preview"
-                    value={qrPayload}
-                    size={Math.min(qrSize, 260)}
-                    fgColor={qrFgColor}
-                    bgColor={qrBgColor}
-                    level={errorLevel}
-                    marginSize={2}
-                    imageSettings={
-                      includeLogo
-                        ? {
-                            src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="%232563EB"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="40" fill="white">P</text></svg>',
-                            height: 48,
-                            width: 48,
-                            excavate: true,
-                          }
-                        : undefined
-                    }
-                  />
-                </div>
+              <h3 className="font-bold text-base text-foreground mt-2">{getLabelTitle()}</h3>
+            </div>
 
-                {/* Caption Footer */}
-                <div className="mt-4 text-center max-w-[260px]">
-                  <div
-                    className="font-bold text-sm leading-tight truncate"
-                    style={{ color: qrFgColor }}
-                  >
-                    {previewTitle}
-                  </div>
-                  <div className="text-xs text-slate-500 mt-0.5 truncate">
-                    {previewSubtitle}
-                  </div>
-                </div>
-              </div>
+            {/* SVG Render for display */}
+            <div
+              className="p-6 rounded-2xl shadow-inner border border-border flex items-center justify-center mx-auto"
+              style={{ backgroundColor: bgColor }}
+            >
+              <QRCodeSVG
+                value={getPayload()}
+                size={qrSize}
+                level={qrLevel}
+                marginSize={2}
+                fgColor={fgColor}
+                bgColor={bgColor}
+                imageSettings={
+                  includeLogo
+                    ? {
+                        src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="%232563EB"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="40" fill="white">P</text></svg>',
+                        height: Math.floor(qrSize * 0.18),
+                        width: Math.floor(qrSize * 0.18),
+                        excavate: true,
+                      }
+                    : undefined
+                }
+              />
+            </div>
 
-              {/* Hidden Canvas for High-Res PNG Exports */}
-              <div className="hidden">
-                <QRCodeCanvas
-                  id="qr-canvas-download"
-                  ref={canvasRef}
-                  value={qrPayload}
-                  size={qrSize * 2}
-                  fgColor={qrFgColor}
-                  bgColor={qrBgColor}
-                  level={errorLevel}
-                  marginSize={3}
-                  imageSettings={
-                    includeLogo
-                      ? {
-                          src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="%232563EB"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="40" fill="white">P</text></svg>',
-                          height: 80,
-                          width: 80,
-                          excavate: true,
-                        }
-                      : undefined
-                  }
-                />
-              </div>
+            {/* Hidden Canvas for crisp high-resolution export */}
+            <div className="hidden">
+              <QRCodeCanvas
+                id="generator-canvas"
+                value={getPayload()}
+                size={qrSize * 2}
+                level={qrLevel}
+                marginSize={3}
+                fgColor={fgColor}
+                bgColor={bgColor}
+                imageSettings={
+                  includeLogo
+                    ? {
+                        src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="%232563EB"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="40" fill="white">P</text></svg>',
+                        height: Math.floor(qrSize * 2 * 0.18),
+                        width: Math.floor(qrSize * 2 * 0.18),
+                        excavate: true,
+                      }
+                    : undefined
+                }
+              />
+            </div>
 
-              {/* Action Buttons */}
-              <div className="grid grid-cols-3 gap-2 w-full mt-6">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCopy}
-                  className="gap-1.5 text-xs rounded-xl"
-                >
-                  {copied ? <Check className="size-3.5 text-emerald-500" /> : <Copy className="size-3.5" />}
-                  {copied ? 'Copied' : 'Copy'}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDownloadSvg}
-                  className="gap-1.5 text-xs rounded-xl"
-                >
-                  <Download className="size-3.5" />
-                  SVG
-                </Button>
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={handleDownloadPng}
-                  className="gap-1.5 text-xs rounded-xl font-semibold"
-                >
-                  <Download className="size-3.5" />
-                  PNG (Hi-Res)
-                </Button>
-              </div>
+            {/* Payload preview string */}
+            <div className="p-2.5 rounded-xl bg-secondary/80 text-[11px] font-mono text-muted-foreground break-all text-left border border-border">
+              <div className="text-[9px] uppercase font-bold text-muted-foreground tracking-wider mb-0.5">Payload Data:</div>
+              <span className="text-foreground">{getPayload()}</span>
+            </div>
 
-              <div className="w-full mt-3 p-2.5 rounded-xl bg-muted/60 border border-border/50 text-left text-[11px] text-muted-foreground">
-                <strong>Tip for Librarians:</strong> Print labels on standard 40x40mm adhesive sticker sheets for quick spine tagging.
-              </div>
-            </CardContent>
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <Button variant="outline" size="sm" onClick={handleCopy} className="gap-1.5 text-xs rounded-xl">
+                {copied ? <Check className="size-3.5 text-emerald-500" /> : <Copy className="size-3.5" />}
+                {copied ? 'Tersalin' : 'Salin Gambar'}
+              </Button>
+              <Button variant="default" size="sm" onClick={handleDownloadPng} className="gap-1.5 text-xs rounded-xl font-semibold">
+                <Download className="size-3.5" />
+                Unduh PNG
+              </Button>
+            </div>
           </Card>
         </div>
       </div>
