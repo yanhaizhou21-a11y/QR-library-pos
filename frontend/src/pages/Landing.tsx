@@ -1,30 +1,25 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   QrCode,
   Zap,
-  ShieldCheck,
   Clock,
   Sparkles,
   BookOpen,
   ArrowRight,
   CheckCircle2,
   Users,
-  Search,
   ScanLine,
   TrendingUp,
-  Award,
-  Layers,
   ChevronRight,
-  ShieldAlert,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api, Book } from '../api/client';
-import { Cover, Stars, StatusBadge, rupiah } from '../components/ui';
+import { Stars } from '../components/ui';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 
 const STEPS = [
   {
@@ -70,8 +65,6 @@ export default function Landing() {
       })
       .catch(() => {});
   }, []);
-
-  const springTransition = { type: 'spring', stiffness: 120, damping: 20 };
 
   return (
     <div className="space-y-24 sm:space-y-32 overflow-hidden pb-16">

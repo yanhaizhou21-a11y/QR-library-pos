@@ -4,18 +4,13 @@ import {
   Download,
   Copy,
   Check,
-  User,
-  Phone,
-  Mail,
   LogOut,
   Save,
   ShieldCheck,
-  Sparkles,
   IdCard,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
-import { StatusBadge } from '../components/ui';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
