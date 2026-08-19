@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState, useRef } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import {
   BookOpen,
@@ -17,7 +17,6 @@ import {
 import { api, Book } from '../../api/client';
 import { Modal, Cover, StatusBadge } from '../../components/ui';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 
 const EMPTY_FORM = {
   judul: '',
@@ -240,7 +239,7 @@ export default function AdminBooks() {
           >
             <option value="">Semua Kategori ({categories.length})</option>
             {categories.map((cat) => (
-              <option key={cat} value={cat}>
+              <option key={cat} value={cat || ''}>
                 {cat}
               </option>
             ))}
