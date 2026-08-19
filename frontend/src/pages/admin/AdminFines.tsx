@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import { StatusBadge, rupiah, fmtDate } from '../../components/ui';
 import { Button } from '@/components/ui/button';
-import { DollarSign, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { DollarSign, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface Fine {
   id: number;
