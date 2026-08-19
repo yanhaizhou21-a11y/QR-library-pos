@@ -13,16 +13,38 @@ import { adminRouter } from './routes/admin';
 import { reportsRouter } from './routes/reports';
 import { errorHandler, notFound } from './middleware/error';
 import { startScheduler } from './services/scheduler';
+import { rateLimit } from './utils/rateLimit';
 
 const app = express();
+
+// Security Headers Middleware
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(self)');
+  next();
+});
+
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
-app.get('/health', (_req, res) => res.json({ ok: true, nama: 'Pustaka QR API', waktu: new Date().toISOString() }));
+app.get('/health', (_req, res) =>
+  res.json({
+    ok: true,
+    nama: 'Pustaka QR API',
+    version: '2.0.0',
+    waktu: new Date().toISOString(),
+  }),
+);
+
+// Global API rate limiters for security
+const scanLimiter = rateLimit(60, 60 * 1000); // 60 scans per minute per IP
 
 app.use('/api/auth', authRouter);
 app.use('/api/books', booksRouter);
-app.use('/api/scan', scanRouter);
+app.use('/api/scan', scanLimiter, scanRouter);
 app.use('/api/loans', loansRouter);
 app.use('/api/reservations', reservationsRouter);
 app.use('/api/notifications', notificationsRouter);
