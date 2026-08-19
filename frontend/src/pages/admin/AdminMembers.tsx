@@ -11,7 +11,6 @@ import {
   ShieldAlert,
   ShieldCheck,
   Trash2,
-  QrCode,
   AlertCircle,
   IdCard,
 } from 'lucide-react';
