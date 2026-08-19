@@ -15,6 +15,7 @@ interface Overview {
   dendaBelum: number;
   bukuKosong: number;
 }
+
 interface PopularRow {
   id: number;
   judul: string;
@@ -23,6 +24,7 @@ interface PopularRow {
   total_pinjam: number;
   stok_tersedia: number;
 }
+
 interface MonthRow {
   bulan: string;
   pinjam: number;
@@ -35,9 +37,15 @@ export default function AdminOverview() {
   const [months, setMonths] = useState<MonthRow[]>([]);
 
   useEffect(() => {
-    api.get<Overview>('/admin/reports/overview').then(setOv).catch(() => undefined);
-    api.get<{ rows: PopularRow[] }>('/admin/reports/popular-books').then((d) => setPopular(d.rows)).catch(() => undefined);
-    api.get<{ months: MonthRow[] }>('/admin/reports/monthly-loans').then((d) => setMonths(d.months)).catch(() => undefined);
+    api.get<Overview>('/admin/reports/overview').then(setOv).catch(() => {});
+    api
+      .get<{ rows: PopularRow[] }>('/admin/reports/popular-books')
+      .then((d) => setPopular(d.rows))
+      .catch(() => {});
+    api
+      .get<{ months: MonthRow[] }>('/admin/reports/monthly-loans')
+      .then((d) => setMonths(d.months))
+      .catch(() => {});
   }, []);
 
   if (!ov) return <div className="page-loading">Memuat dashboard...</div>;
@@ -52,6 +60,7 @@ export default function AdminOverview() {
     { label: 'Pinjam hari ini', value: ov.peminjamanHariIni },
     { label: 'Kembali hari ini', value: ov.pengembalianHariIni },
   ];
+
   const maxPinjam = Math.max(1, ...months.map((m) => m.pinjam + m.kembali));
   const maxPop = Math.max(1, ...popular.map((p) => p.total_pinjam));
 
@@ -60,28 +69,37 @@ export default function AdminOverview() {
       <div className="page-head flex-between">
         <div>
           <h2>Ringkasan Perpustakaan</h2>
-          <p className="muted small" style={{ margin: 0 }}>Pantau kondisi operasional secara real-time</p>
+          <p className="muted small" style={{ margin: 0 }}>
+            Pantau kondisi operasional secara real-time
+          </p>
         </div>
         <div className="flex gap-sm">
-          <span className="badge badge-green">Pendapatan denda lunas: {rupiah(ov.totalDenda)}</span>
-          <span className="badge badge-amber">Denda belum dibayar: {rupiah(ov.dendaBelum)}</span>
+          <span className="badge badge-green">Denda lunas: {rupiah(ov.totalDenda)}</span>
+          <span className="badge badge-amber">Belum bayar: {rupiah(ov.dendaBelum)}</span>
         </div>
       </div>
 
       <div className="grid grid-4">
         {stats.map((s) => (
-          <div className="card stat-card" key={s.label}>
+          <div className="card stat-card card-hover reveal" key={s.label}>
             <div className="stat-label">{s.label}</div>
-            <div className="stat-value" style={s.warn ? { color: 'var(--danger)' } : undefined}>{s.value}</div>
+            <div
+              className="stat-value"
+              style={s.warn ? { color: 'var(--danger)' } : undefined}
+            >
+              {s.value}
+            </div>
           </div>
         ))}
       </div>
 
       <div className="grid grid-2 mt-2">
-        <div className="card">
+        <div className="card card-hover reveal">
           <div className="flex-between">
             <h3 style={{ margin: 0 }}>Peminjaman 12 Bulan Terakhir</h3>
-            <Link to="/admin/laporan" className="small">Detail →</Link>
+            <Link to="/admin/laporan" className="small">
+              Detail →
+            </Link>
           </div>
           {months.length === 0 && <p className="muted small mt-1">Belum ada data.</p>}
           <div className="chart-bar-wrap mt-2">
@@ -89,25 +107,35 @@ export default function AdminOverview() {
               <div className="chart-row" key={m.bulan}>
                 <span className="chart-label">{m.bulan}</span>
                 <div className="chart-bar">
-                  <div className="chart-fill" style={{ width: `${((m.pinjam + m.kembali) / maxPinjam) * 100}%` }} />
+                  <div
+                    className="chart-fill"
+                    style={{ width: `${((m.pinjam + m.kembali) / maxPinjam) * 100}%` }}
+                  />
                 </div>
-                <span className="chart-val">{m.pinjam + m.kembali}</span>
+                <span className="chart-val">
+                  {m.pinjam + m.kembali}
+                </span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="card">
+        <div className="card card-hover reveal">
           <div className="flex-between">
             <h3 style={{ margin: 0 }}>Buku Paling Sering Dipinjam</h3>
-            <Link to="/admin/laporan" className="small">Detail →</Link>
+            <Link to="/admin/laporan" className="small">
+              Detail →
+            </Link>
           </div>
           <div className="chart-bar-wrap mt-2">
             {popular.slice(0, 6).map((p) => (
               <div className="chart-row" key={p.id}>
                 <span className="chart-label">{p.judul}</span>
                 <div className="chart-bar">
-                  <div className="chart-fill" style={{ width: `${(p.total_pinjam / maxPop) * 100}%` }} />
+                  <div
+                    className="chart-fill"
+                    style={{ width: `${(p.total_pinjam / maxPop) * 100}%` }}
+                  />
                 </div>
                 <span className="chart-val">{p.total_pinjam}x</span>
               </div>
@@ -116,7 +144,7 @@ export default function AdminOverview() {
         </div>
       </div>
 
-      <div className="card mt-2">
+      <div className="card mt-2 card-hover reveal">
         <h3 style={{ margin: 0 }}>Top 5 Buku Terpopuler (detail)</h3>
         <div className="grid grid-books mt-2">
           {popular.slice(0, 5).map((p) => (
@@ -127,7 +155,9 @@ export default function AdminOverview() {
                 <div className="book-author">{p.penulis}</div>
                 <div className="book-meta">
                   <span className="badge badge-blue">{p.total_pinjam}× dipinjam</span>
-                  <span className={`badge ${p.stok_tersedia > 0 ? 'badge-green' : 'badge-red'}`}>{p.stok_tersedia} sisa</span>
+                  <span className={`badge ${p.stok_tersedia > 0 ? 'badge-green' : 'badge-red'}`}>
+                    {p.stok_tersedia} sisa
+                  </span>
                 </div>
               </div>
             </Link>

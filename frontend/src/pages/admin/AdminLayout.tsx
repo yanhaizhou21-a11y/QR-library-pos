@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const LINKS = [
@@ -17,20 +17,32 @@ export default function AdminLayout() {
   return (
     <div className="admin-layout">
       <aside className="admin-side">
-        <div className="small" style={{ padding: '4px 12px 12px', color: '#64748b', fontWeight: 700, letterSpacing: '.05em' }}>
-          PANEL ADMIN
-        </div>
+        <Link to="/" className="admin-brand">
+          <span className="brand-logo">P</span>
+          <span>Pustaka Admin</span>
+        </Link>
+        <div className="admin-group-label">MENU</div>
         {LINKS.map((l) => (
           <NavLink key={l.to} to={l.to} end={l.end}>
             <span>{l.icon}</span>
             <span>{l.label}</span>
           </NavLink>
         ))}
+        <div className="admin-divider" />
         <NavLink to="/" end>
-          <span>🏠</span><span>Buka Situs</span>
+          <span>🏠</span>
+          <span>Buka Situs</span>
         </NavLink>
-        <div className="small" style={{ padding: '14px 12px 0', color: '#64748b' }}>
-          Masuk sebagai<br /><strong style={{ color: '#e2e8f0' }}>{user?.nama}</strong>
+        <div className="admin-user">
+          <div className="avatar" style={{ width: 28, height: 28, fontSize: 12 }}>
+            {(user?.nama || '?').charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div className="small" style={{ color: '#e2e8f0', fontWeight: 700 }}>
+              {user?.nama}
+            </div>
+            <div className="small" style={{ color: '#64748b' }}>Administrator</div>
+          </div>
         </div>
       </aside>
       <div className="admin-main">
