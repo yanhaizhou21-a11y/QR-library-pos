@@ -6,11 +6,7 @@ import {
 } from '@/components/library/icons';
 import {
   Search,
-  BookOpen,
-  Calendar,
   AlertCircle,
-  QrCode,
-  ArrowUpDown,
 } from 'lucide-react';
 import { api } from '../../api/client';
 import { StatusBadge, Cover, rupiah, fmtDate } from '../../components/ui';
