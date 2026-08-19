@@ -5,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { api } from '../api/client';
 import { Logo } from './library/logo';
 import { ThemeIcon, BellIcon, DashboardIcon } from './library/icons';
-import { QrCode, BookOpen, ShieldCheck, Sparkles } from 'lucide-react';
+import { QrCode, ShieldCheck, Sparkles } from 'lucide-react';
 
 function useUnread() {
   const [unread, setUnread] = useState(0);
@@ -31,7 +31,7 @@ function useUnread() {
 export default function UserLayout() {
   const { user } = useAuth();
   const unread = useUnread();
-  const { theme, toggle } = useTheme();
+  const { toggle } = useTheme();
   const initial = (user?.nama || '?').charAt(0).toUpperCase();
 
   return (
