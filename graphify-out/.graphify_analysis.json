@@ -1,0 +1,272 @@
+{
+  "communities": {
+    "0": [
+      "frontend_src_api_client_authimageurl",
+      "frontend_src_api_client_book",
+      "frontend_src_components_qrscanner_qrscanner",
+      "frontend_src_components_ui_cover",
+      "frontend_src_components_ui_fmtdate",
+      "frontend_src_components_ui_modal",
+      "frontend_src_components_ui_rupiah",
+      "frontend_src_components_ui_stars",
+      "frontend_src_components_ui_statusbadge",
+      "frontend_src_components_userlayout",
+      "frontend_src_context_authcontext_useauth",
+      "frontend_src_pages_admin_adminbooks",
+      "frontend_src_pages_admin_adminfines",
+      "frontend_src_pages_admin_adminlayout",
+      "frontend_src_pages_admin_adminloans",
+      "frontend_src_pages_admin_adminmembers",
+      "frontend_src_pages_admin_adminoverview",
+      "frontend_src_pages_admin_adminreports",
+      "frontend_src_pages_admin_adminreservations",
+      "frontend_src_pages_admin_adminsettings",
+      "frontend_src_pages_bookdetail",
+      "frontend_src_pages_catalog",
+      "frontend_src_pages_landing",
+      "frontend_src_pages_login",
+      "frontend_src_pages_myloans",
+      "frontend_src_pages_profile",
+      "frontend_src_pages_register",
+      "frontend_src_pages_scan"
+    ],
+    "1": [
+      "frontend_src_app",
+      "frontend_src_components_userlayout_userlayout",
+      "frontend_src_pages_admin_adminbooks_adminbooks",
+      "frontend_src_pages_admin_adminfines_adminfines",
+      "frontend_src_pages_admin_adminlayout_adminlayout",
+      "frontend_src_pages_admin_adminloans_adminloans",
+      "frontend_src_pages_admin_adminmembers_adminmembers",
+      "frontend_src_pages_admin_adminoverview_adminoverview",
+      "frontend_src_pages_admin_adminreports_adminreports",
+      "frontend_src_pages_admin_adminreservations_adminreservations",
+      "frontend_src_pages_admin_adminsettings_adminsettings",
+      "frontend_src_pages_bookdetail_bookdetail",
+      "frontend_src_pages_catalog_catalog",
+      "frontend_src_pages_forgotpassword_forgotpassword",
+      "frontend_src_pages_landing_landing",
+      "frontend_src_pages_login_login",
+      "frontend_src_pages_myloans_myloans",
+      "frontend_src_pages_notfound_notfound",
+      "frontend_src_pages_notifications_notifications",
+      "frontend_src_pages_profile_profile",
+      "frontend_src_pages_register_register",
+      "frontend_src_pages_resetpassword_resetpassword",
+      "frontend_src_pages_scan_scan"
+    ],
+    "2": [
+      "backend_src_db_all",
+      "backend_src_middleware_auth_adminrequired",
+      "backend_src_middleware_auth_authuser",
+      "backend_src_middleware_auth_optionalauth",
+      "backend_src_middleware_error_asynchandler",
+      "backend_src_routes_books",
+      "backend_src_routes_notifications",
+      "backend_src_routes_reports",
+      "backend_src_utils_date_fmttime"
+    ],
+    "3": [
+      "backend_src_db_getsetting",
+      "backend_src_db_run",
+      "backend_src_routes_loans",
+      "backend_src_services_loans",
+      "backend_src_services_scheduler",
+      "backend_src_utils_date_adddaysiso",
+      "backend_src_utils_date_dayslate",
+      "backend_src_utils_date_fmtdate"
+    ],
+    "4": [
+      "backend_src_db_pushnotification",
+      "backend_src_db_setsetting",
+      "backend_src_middleware_auth_authrequired",
+      "backend_src_routes_admin",
+      "backend_src_routes_reservations",
+      "backend_src_seed",
+      "backend_src_utils_date_nowiso"
+    ],
+    "5": [
+      "backend_src_routes_scan",
+      "backend_src_services_loans_borrowbook",
+      "backend_src_services_loans_returnbook",
+      "backend_src_utils_qr_bookcode",
+      "backend_src_utils_qr_membercode",
+      "backend_src_utils_qr_parsecode"
+    ],
+    "6": [
+      "frontend_src_api_client_clearsession",
+      "frontend_src_api_client_getstoreduser",
+      "frontend_src_api_client_setsession",
+      "frontend_src_api_client_user",
+      "frontend_src_context_authcontext",
+      "frontend_src_context_authcontext_authctx"
+    ],
+    "7": [
+      "backend_src_index",
+      "backend_src_middleware_error_errorhandler",
+      "backend_src_middleware_error_notfound",
+      "backend_src_seed_seed",
+      "backend_src_services_scheduler_startscheduler"
+    ],
+    "8": [
+      "backend_src_routes_auth",
+      "backend_src_utils_date_uid",
+      "backend_src_utils_jwt_signaccess",
+      "backend_src_utils_qr_qrpngbuffer",
+      "backend_src_utils_ratelimit_ratelimit"
+    ],
+    "9": [
+      "backend_src_db_get",
+      "backend_src_middleware_auth",
+      "backend_src_utils_jwt_verifytoken"
+    ],
+    "10": [
+      "frontend_src_app_app",
+      "frontend_src_context_authcontext_authprovider",
+      "frontend_src_main"
+    ],
+    "11": [
+      "frontend_src_components_ui_fmtdatetime",
+      "frontend_src_pages_notifications"
+    ],
+    "12": [
+      "backend_src_db_queryparams"
+    ],
+    "13": [
+      "backend_src_db_settingssnapshot"
+    ],
+    "14": [
+      "backend_src_services_loans_claimnextreservation"
+    ],
+    "15": [
+      "backend_src_services_loans_loanresult"
+    ],
+    "16": [
+      "backend_src_services_scheduler_syncnotifications"
+    ],
+    "17": [
+      "backend_src_utils_date_dateonly"
+    ],
+    "18": [
+      "backend_src_utils_date_diffdays"
+    ],
+    "19": [
+      "backend_src_utils_date_randomdigits"
+    ],
+    "20": [
+      "backend_src_utils_date_rupiah"
+    ],
+    "21": [
+      "backend_src_utils_date_todayiso"
+    ],
+    "22": [
+      "backend_src_utils_jwt_jwtpayload"
+    ],
+    "23": [
+      "frontend_src_api_client_booklistitem"
+    ],
+    "24": [
+      "frontend_src_api_client_getaccess"
+    ],
+    "25": [
+      "frontend_src_api_client_getrefresh"
+    ],
+    "26": [
+      "frontend_src_context_authcontext_usehasrole"
+    ]
+  },
+  "cohesion": {
+    "0": 0.12169312169312169,
+    "1": 0.08695652173913043,
+    "2": 0.3611111111111111,
+    "3": 0.5,
+    "4": 0.47619047619047616,
+    "5": 0.3333333333333333,
+    "6": 0.3333333333333333,
+    "7": 0.4,
+    "8": 0.4,
+    "9": 0.6666666666666666,
+    "10": 0.6666666666666666,
+    "11": 1.0,
+    "12": 1.0,
+    "13": 1.0,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0,
+    "22": 1.0,
+    "23": 1.0,
+    "24": 1.0,
+    "25": 1.0,
+    "26": 1.0
+  },
+  "gods": [
+    {
+      "id": "frontend_src_app",
+      "label": "Frontend Src App",
+      "degree": 23
+    },
+    {
+      "id": "backend_src_routes_auth",
+      "label": "Backend Src Routes Auth",
+      "degree": 14
+    },
+    {
+      "id": "backend_src_db_get",
+      "label": "get",
+      "degree": 11
+    },
+    {
+      "id": "backend_src_routes_books",
+      "label": "Backend Src Routes Books",
+      "degree": 11
+    },
+    {
+      "id": "frontend_src_context_authcontext_useauth",
+      "label": "useAuth",
+      "degree": 10
+    },
+    {
+      "id": "backend_src_routes_admin",
+      "label": "Backend Src Routes Admin",
+      "degree": 10
+    },
+    {
+      "id": "backend_src_routes_loans",
+      "label": "Backend Src Routes Loans",
+      "degree": 10
+    },
+    {
+      "id": "backend_src_db_all",
+      "label": "all",
+      "degree": 9
+    },
+    {
+      "id": "backend_src_db_run",
+      "label": "run",
+      "degree": 9
+    },
+    {
+      "id": "backend_src_services_loans",
+      "label": "Backend Src Services Loans",
+      "degree": 9
+    }
+  ],
+  "surprises": [
+    {
+      "source": "Frontend Src Context Authcontext Authctx",
+      "target": "User",
+      "source_files": [
+        "frontend/src/context/AuthContext.tsx",
+        "frontend/src/api/client.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "cross-file semantic connection"
+    }
+  ]
+}
