@@ -3,7 +3,7 @@ import { api } from '../../api/client';
 import { rupiah } from '../../components/ui';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Settings, Check, AlertCircle, Shield, Clock, DollarSign, BookOpen } from 'lucide-react';
+import { Settings, Check, Shield, Clock, DollarSign, BookOpen } from 'lucide-react';
 
 export default function AdminSettings() {
   const [loanDays, setLoanDays] = useState(7);
