@@ -23,6 +23,8 @@ import AdminFines from './pages/admin/AdminFines';
 import AdminReservations from './pages/admin/AdminReservations';
 import AdminReports from './pages/admin/AdminReports';
 import AdminSettings from './pages/admin/AdminSettings';
+import AdminQRGenerator from './pages/admin/AdminQRGenerator';
+import LibraryDashboardDemo from './demo';
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -57,6 +59,7 @@ export default function App() {
       </Route>
       <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
         <Route index element={<AdminOverview />} />
+        <Route path="qr-generator" element={<AdminQRGenerator />} />
         <Route path="buku" element={<AdminBooks />} />
         <Route path="transaksi" element={<AdminLoans />} />
         <Route path="anggota" element={<AdminMembers />} />
@@ -65,6 +68,7 @@ export default function App() {
         <Route path="laporan" element={<AdminReports />} />
         <Route path="pengaturan" element={<AdminSettings />} />
       </Route>
+      <Route path="/demo" element={<LibraryDashboardDemo />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
