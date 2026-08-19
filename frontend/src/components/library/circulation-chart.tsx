@@ -79,7 +79,8 @@ const chartMidpoints: Record<CirculationTimeframe, number[]> = {
 };
 
 function getMidpoints(ticks: number[], domainEnd: number) {
-  const points = ticks.at(-1) === domainEnd ? ticks : [...ticks, domainEnd];
+  const lastTick = ticks.length > 0 ? ticks[ticks.length - 1] : domainEnd;
+  const points = lastTick === domainEnd ? ticks : [...ticks, domainEnd];
 
   return points.slice(0, -1).map((tick, index) => {
     return tick + (points[index + 1] - tick) / 2;
