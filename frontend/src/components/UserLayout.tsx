@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { api } from '../api/client';
+import { useTheme } from '../context/ThemeContext';
+import api from '../api/client';
 
 function useUnread() {
   const [unread, setUnread] = useState(0);
@@ -13,7 +14,7 @@ function useUnread() {
       api
         .get<{ unread: number }>('/notifications/me')
         .then((d) => alive && setUnread(d.unread))
-        .catch(() => undefined);
+        .catch(() => {});
     load();
     const t = setInterval(load, 30000);
     return () => {
@@ -25,8 +26,9 @@ function useUnread() {
 }
 
 export default function UserLayout() {
-  const { user } = useAuth();
+  const user = useAuth();
   const unread = useUnread();
+  const { theme, toggle } = useTheme();
   const initial = (user?.nama || '?').charAt(0).toUpperCase();
 
   return (
@@ -45,7 +47,7 @@ export default function UserLayout() {
               Katalog
             </NavLink>
             <NavLink to="/scan" className="nav-link">
-              Pindai QR
+              Pindai
             </NavLink>
             {user?.role === 'admin' && (
               <NavLink to="/admin" className="nav-link">
@@ -54,11 +56,15 @@ export default function UserLayout() {
             )}
           </div>
           <div className="nav-actions">
+            <button className="theme-toggle" onClick={toggle} title="Ganti tema">
+              {theme === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19'}
+            </button>
             {user ? (
               <>
                 <Link to="/notifikasi" className="notif-bell" title="Notifikasi">
-                  🔔
-                  {unread > 0 && <span className="notif-badge">{unread > 9 ? '9+' : unread}</span>}
+                  {unread > 0 && (
+                    <span className="notif-badge">{unread > 9 ? '9+' : unread}</span>
+                  )}
                 </Link>
                 <Link to="/pinjaman" className="nav-link small">
                   Pinjaman
@@ -89,7 +95,7 @@ export default function UserLayout() {
             <div>
               <h4>Pustaka QR</h4>
               <p>
-                Sistem POS perpustakaan berbasis QR code untuk peminjaman dan pengembalian buku yang cepat,
+                Sistem POS perpustakaan berbasis QR untuk peminjaman dan pengembalian buku yang cepat,
                 akurat, dan tercatat real-time.
               </p>
             </div>
@@ -104,15 +110,15 @@ export default function UserLayout() {
             <div>
               <h4>Layanan</h4>
               <div style={{ display: 'grid', gap: 6 }}>
-                <span>Jam operasional: 08.00–20.00</span>
+                <span>Jam operasional: 08.00\u201320.00</span>
                 <span>Jalan Perpustakaan No. 1</span>
-                <span>📞 (021) 555-0123</span>
-                <span>✉️ halo@pustaka.id</span>
+                <span>(021) 555-0123</span>
+                <span>halo@pustaka.id</span>
               </div>
             </div>
           </div>
           <p className="small" style={{ marginTop: 24, opacity: 0.7 }}>
-            © {new Date().getFullYear()} Pustaka QR. Dibangun dengan Vite, React, Express & SQLite.
+            {new Date().getFullYear()} Pustaka QR. Dibangun dengan Vite, React, Express, SQLite.
           </p>
         </div>
       </footer>
