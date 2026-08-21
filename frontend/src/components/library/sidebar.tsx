@@ -53,16 +53,16 @@ import {
 } from '../../data';
 
 const menuButtonBaseClassName =
-  'h-11 gap-3 rounded-lg border border-transparent px-3.5 font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:bg-muted active:text-foreground data-active:border-border data-active:bg-card data-active:text-primary data-active:shadow-[1.35px_2.7px_32.45px_rgba(158,158,158,0.08)] data-active:hover:bg-card data-active:hover:text-primary data-active:active:bg-card data-active:active:text-primary [&_svg]:size-5 [&_svg]:text-foreground data-active:[&_svg]:text-primary';
+  'h-10 gap-3 rounded-lg border border-transparent px-3 text-sm font-medium text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground data-active:border-border/80 data-active:bg-muted/80 data-active:text-foreground data-active:font-semibold [&_svg]:size-4.5 [&_svg]:text-muted-foreground data-active:[&_svg]:text-primary';
 
 const sidebarMenuButtonClassName = cn(
   menuButtonBaseClassName,
-  'group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0!',
+  'group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0!',
 );
 
 const sidebarMenuSubButtonClassName = cn(
   menuButtonBaseClassName,
-  '[&_svg]:text-foreground! data-active:[&_svg]:text-primary!',
+  'h-9 text-xs [&_svg]:size-4 data-active:font-semibold',
 );
 
 const subItemsMenuContentClassName = 'z-100 w-48 p-1.5 shadow-lg';

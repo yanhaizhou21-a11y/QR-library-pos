@@ -4,18 +4,15 @@ import { CirculationChart } from './circulation-chart';
 import { CollectionDonutChart } from './collection-donut-chart';
 import { HeroCard } from './hero-card';
 import {
-  ArrowDown01Icon,
   BookPlusIcon,
   CancelIcon,
   CheckoutIcon,
-  Download01Icon,
   QrCodeIcon,
   ReturnIcon,
   SparklesIcon,
   UserAdd02Icon,
 } from './icons';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import {
   collectionOverview,
   intelligenceCards,
@@ -24,7 +21,17 @@ import {
 } from '../../data';
 import { cn } from '@/lib/utils';
 import { api } from '../../api/client';
-import { ArrowUpRight, CheckCircle2, TrendingUp, TrendingDown } from 'lucide-react';
+import { ArrowUpRight, CheckCircle2, TrendingUp } from 'lucide-react';
+
+export type MetricItem = {
+  label: string;
+  value: string;
+  note: string;
+  icon: React.ComponentType<{ className?: string }>;
+  iconClassName: string;
+  trend?: 'up' | 'down';
+  noteIcon?: React.ComponentType<{ className?: string }>;
+};
 
 const quickActions = [
   {
@@ -66,7 +73,7 @@ const quickActions = [
 
 export function DashboardContent() {
   const navigate = useNavigate();
-  const [metrics, setMetrics] = useState(defaultMetrics);
+  const [metrics, setMetrics] = useState<MetricItem[]>(defaultMetrics as MetricItem[]);
   const [dismissedCards, setDismissedCards] = useState<string[]>([]);
   const [rawOverview, setRawOverview] = useState<any>(null);
 
