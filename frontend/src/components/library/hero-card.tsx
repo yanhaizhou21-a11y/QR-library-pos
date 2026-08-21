@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, QrCode, ScanLine, BookCheck, Download } from 'lucide-react';
+import { ArrowRight, ScanLine, BookCheck, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

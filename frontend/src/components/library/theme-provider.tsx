@@ -8,7 +8,22 @@ import {
   type ReactNode,
 } from 'react';
 
-type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark' | 'monochrome' | 'monochrome-dark' | 'cyberpunk';
+
+export interface ThemeOption {
+  id: Theme;
+  label: string;
+  category: 'Modern' | 'Monochrome' | 'Cyberpunk';
+  badge: string;
+}
+
+export const THEME_OPTIONS: ThemeOption[] = [
+  { id: 'light', label: 'Modern Clean (Light)', category: 'Modern', badge: 'Blue / Slate' },
+  { id: 'dark', label: 'Modern Clean (Dark)', category: 'Modern', badge: 'Indigo Void' },
+  { id: 'monochrome', label: 'Minimalist Monochrome', category: 'Monochrome', badge: 'Pure B&W / Serif' },
+  { id: 'monochrome-dark', label: 'Monochrome (Dark)', category: 'Monochrome', badge: 'Onyx Editorial' },
+  { id: 'cyberpunk', label: 'Cyberpunk Terminal', category: 'Cyberpunk', badge: 'Neon Matrix' },
+];
 
 type ThemeProviderProps = {
   children: ReactNode;
@@ -27,13 +42,19 @@ const ThemeProviderContext = createContext<ThemeProviderState | null>(null);
 export function ThemeProvider({
   children,
   defaultTheme = 'light',
-  storageKey = 'theme',
+  storageKey = 'pustaka_theme',
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window === 'undefined') return defaultTheme;
 
-    const storedTheme = localStorage.getItem(storageKey);
-    if (storedTheme === 'light' || storedTheme === 'dark') {
+    const storedTheme = localStorage.getItem(storageKey) as Theme | null;
+    if (
+      storedTheme === 'light' ||
+      storedTheme === 'dark' ||
+      storedTheme === 'monochrome' ||
+      storedTheme === 'monochrome-dark' ||
+      storedTheme === 'cyberpunk'
+    ) {
       return storedTheme;
     }
 
@@ -43,7 +64,7 @@ export function ThemeProvider({
   });
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.classList.toggle('dark', theme === 'dark' || theme === 'monochrome-dark' || theme === 'cyberpunk');
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
@@ -57,7 +78,12 @@ export function ThemeProvider({
 
   const toggleTheme = useCallback(() => {
     setThemeState((currentTheme) => {
-      const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      let nextTheme: Theme;
+      if (currentTheme === 'light') nextTheme = 'dark';
+      else if (currentTheme === 'dark') nextTheme = 'monochrome';
+      else if (currentTheme === 'monochrome') nextTheme = 'monochrome-dark';
+      else if (currentTheme === 'monochrome-dark') nextTheme = 'cyberpunk';
+      else nextTheme = 'light';
       localStorage.setItem(storageKey, nextTheme);
       return nextTheme;
     });
