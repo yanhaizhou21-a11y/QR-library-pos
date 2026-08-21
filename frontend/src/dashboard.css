@@ -2,7 +2,39 @@
 
 @layer base {
   :root {
-    --background: #ffffff;
+    /* ── Transitions.dev Motion Tokens ───────────────────────── */
+    --duration-stagger: 40ms;
+    --duration-micro: 80ms;
+    --duration-quick: 150ms;
+    --duration-fast: 250ms;
+    --duration-medium: 350ms;
+    --duration-slow: 400ms;
+    --duration-very-slow: 500ms;
+
+    --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: ease-in-out;
+    --ease-out: ease-out;
+    --ease-linear: linear;
+    --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1);
+    --ease-bounce-strong: cubic-bezier(0.34, 3.85, 0.64, 1);
+
+    --distance-micro: 4px;
+    --distance-small: 6px;
+    --distance-base: 8px;
+    --distance-medium: 12px;
+    --distance-large: 30px;
+
+    --scale-large: 0.96;
+    --scale-medium: 0.97;
+    --scale-small: 0.98;
+    --scale-tiny: 0.99;
+
+    --blur-small: 2px;
+    --blur-medium: 3px;
+    --blur-large: 8px;
+
+    /* ── Modern Clean (Light) ─────────────────────────────────── */
+    --background: #f8fafc;
     --foreground: #0f172a;
 
     --card: #ffffff;
@@ -14,20 +46,21 @@
     --primary: #2563eb;
     --primary-foreground: #ffffff;
 
-    --secondary: #f4f6f8;
+    --secondary: #ffffff;
     --secondary-foreground: #1e293b;
 
-    --muted: #f8fafc;
-    --muted-foreground: #64748b;
+    --muted: #f1f5f9;
+    --muted-foreground: #475569;
 
-    --accent: #f1f5f9;
-    --accent-foreground: #0f172a;
+    --accent: #eff6ff;
+    --accent-foreground: #1d4ed8;
 
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
 
     --border: #e2e8f0;
-    --input: #f1f5f9;
+    --border-light: #f1f5f9;
+    --input: #ffffff;
     --ring: #2563eb;
 
     --radius: 0.75rem;
@@ -41,10 +74,13 @@
     --sidebar-border: #e2e8f0;
     --sidebar-ring: #2563eb;
 
-    --font-sans: 'Outfit', 'Geist', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-heading: 'Outfit', sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    --font-serif: 'Playfair Display', Georgia, serif;
   }
 
+  /* ── Modern Clean (Dark) ─────────────────────────────────── */
   .dark,
   [data-theme='dark'] {
     --background: #090d16;
@@ -62,18 +98,21 @@
     --secondary: #131d31;
     --secondary-foreground: #f1f5f9;
 
-    --muted: #0d1527;
+    --muted: #1e293b;
     --muted-foreground: #94a3b8;
 
-    --accent: #1e293b;
-    --accent-foreground: #f8fafc;
+    --accent: #172554;
+    --accent-foreground: #93c5fd;
 
     --destructive: #f87171;
     --destructive-foreground: #ffffff;
 
     --border: #1e293b;
+    --border-light: #162032;
     --input: #131d31;
     --ring: #3b82f6;
+
+    --radius: 0.75rem;
 
     --sidebar: #090d16;
     --sidebar-foreground: #f8fafc;
@@ -84,8 +123,214 @@
     --sidebar-border: #1e293b;
     --sidebar-ring: #3b82f6;
   }
+
+  /* ── Minimalist Monochrome (Light) ───────────────────────── */
+  [data-theme='monochrome'] {
+    --background: #ffffff;
+    --foreground: #000000;
+
+    --card: #ffffff;
+    --card-foreground: #000000;
+
+    --popover: #ffffff;
+    --popover-foreground: #000000;
+
+    --primary: #000000;
+    --primary-foreground: #ffffff;
+
+    --secondary: #f8f8f8;
+    --secondary-foreground: #000000;
+
+    --muted: #f4f4f4;
+    --muted-foreground: #404040;
+
+    --accent: #000000;
+    --accent-foreground: #ffffff;
+
+    --destructive: #000000;
+    --destructive-foreground: #ffffff;
+
+    --border: #000000;
+    --border-light: #e5e5e5;
+    --input: #ffffff;
+    --ring: #000000;
+
+    --radius: 0px;
+
+    --sidebar: #ffffff;
+    --sidebar-foreground: #000000;
+    --sidebar-primary: #000000;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #f0f0f0;
+    --sidebar-accent-foreground: #000000;
+    --sidebar-border: #000000;
+    --sidebar-ring: #000000;
+
+    --font-sans: 'Source Serif 4', Georgia, serif;
+    --font-heading: 'Playfair Display', Georgia, serif;
+  }
+
+  /* ── Minimalist Monochrome (Dark) ────────────────────────── */
+  [data-theme='monochrome-dark'] {
+    --background: #000000;
+    --foreground: #ffffff;
+
+    --card: #080808;
+    --card-foreground: #ffffff;
+
+    --popover: #0a0a0a;
+    --popover-foreground: #ffffff;
+
+    --primary: #ffffff;
+    --primary-foreground: #000000;
+
+    --secondary: #121212;
+    --secondary-foreground: #ffffff;
+
+    --muted: #1c1c1c;
+    --muted-foreground: #a3a3a3;
+
+    --accent: #ffffff;
+    --accent-foreground: #000000;
+
+    --destructive: #ffffff;
+    --destructive-foreground: #000000;
+
+    --border: #2e2e2e;
+    --border-light: #1f1f1f;
+    --input: #0f0f0f;
+    --ring: #ffffff;
+
+    --radius: 0px;
+
+    --sidebar: #000000;
+    --sidebar-foreground: #ffffff;
+    --sidebar-primary: #ffffff;
+    --sidebar-primary-foreground: #000000;
+    --sidebar-accent: #171717;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: #2e2e2e;
+    --sidebar-ring: #ffffff;
+
+    --font-sans: 'Source Serif 4', Georgia, serif;
+    --font-heading: 'Playfair Display', Georgia, serif;
+  }
+
+  /* ── Cyberpunk Terminal ──────────────────────────────────── */
+  [data-theme='cyberpunk'] {
+    --background: #0a0a0f;
+    --foreground: #f0f0f5;
+
+    --card: #12121a;
+    --card-foreground: #00ff88;
+
+    --popover: #12121a;
+    --popover-foreground: #00ff88;
+
+    --primary: #00ff88;
+    --primary-foreground: #0a0a0f;
+
+    --secondary: #171724;
+    --secondary-foreground: #00d4ff;
+
+    --muted: #1e1e2f;
+    --muted-foreground: #8585a3;
+
+    --accent: #ff00ff;
+    --accent-foreground: #ffffff;
+
+    --destructive: #ff3366;
+    --destructive-foreground: #ffffff;
+
+    --border: #2a2a3e;
+    --border-light: #1e1e2d;
+    --input: #12121a;
+    --ring: #00ff88;
+
+    --radius: 2px;
+
+    --sidebar: #0a0a0f;
+    --sidebar-foreground: #e0e0e0;
+    --sidebar-primary: #00ff88;
+    --sidebar-primary-foreground: #0a0a0f;
+    --sidebar-accent: #1a1a28;
+    --sidebar-accent-foreground: #00ff88;
+    --sidebar-border: #2a2a3e;
+    --sidebar-ring: #00ff88;
+
+    --font-sans: 'JetBrains Mono', monospace;
+    --font-heading: 'Orbitron', monospace;
+  }
 }
 
 .library-dashboard {
   font-family: var(--font-sans);
+  transition: background-color var(--duration-fast) var(--ease-smooth-out),
+              color var(--duration-fast) var(--ease-smooth-out);
 }
+
+.font-heading {
+  font-family: var(--font-heading, var(--font-sans));
+}
+
+/* Subtle background patterns */
+[data-theme='monochrome'] .library-dashboard {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0, 0, 0, 0.015) 1px,
+    rgba(0, 0, 0, 0.015) 2px
+  );
+  background-size: 100% 4px;
+}
+
+[data-theme='monochrome-dark'] .library-dashboard {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(255, 255, 255, 0.02) 1px,
+    rgba(255, 255, 255, 0.02) 2px
+  );
+  background-size: 100% 4px;
+}
+
+[data-theme='cyberpunk'] .library-dashboard {
+  background-image:
+    linear-gradient(rgba(0, 255, 136, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 136, 0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Cyberpunk Chamfer utility */
+[data-theme='cyberpunk'] .cyber-chamfer {
+  clip-path: polygon(
+    0 8px, 8px 0,
+    calc(100% - 8px) 0, 100% 8px,
+    100% calc(100% - 8px), calc(100% - 8px) 100%,
+    8px 100%, 0 calc(100% - 8px)
+  );
+}
+
+/* Smooth card transitions conforming to transitions-dev */
+.smooth-card {
+  transition: transform var(--duration-fast) var(--ease-smooth-out),
+              box-shadow var(--duration-fast) var(--ease-smooth-out),
+              border-color var(--duration-fast) var(--ease-smooth-out),
+              background-color var(--duration-fast) var(--ease-smooth-out);
+}
+
+.smooth-card:hover {
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smooth-card,
+  .smooth-card:hover,
+  .library-dashboard {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
