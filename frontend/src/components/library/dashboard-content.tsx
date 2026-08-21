@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CirculationChart } from './circulation-chart';
 import { CollectionDonutChart } from './collection-donut-chart';
+import { HeroCard } from './hero-card';
 import {
   ArrowDown01Icon,
   BookPlusIcon,
@@ -23,25 +24,58 @@ import {
 } from '../../data';
 import { cn } from '@/lib/utils';
 import { api } from '../../api/client';
+import { ArrowUpRight, CheckCircle2, TrendingUp, TrendingDown } from 'lucide-react';
 
 const quickActions = [
-  { label: 'Checkout Items', icon: CheckoutIcon, href: '/scan?mode=pinjam' },
-  { label: 'Process Return', icon: ReturnIcon, href: '/scan?mode=kembali' },
-  { label: 'Add New Book', icon: BookPlusIcon, href: '/admin/buku?action=new' },
-  { label: 'Add New Member', icon: UserAdd02Icon, href: '/admin/anggota?action=new' },
-  { label: 'QR Studio', icon: QrCodeIcon, href: '/admin/qr-generator' },
+  {
+    label: 'Pinjam Buku (QR)',
+    desc: 'Scan barcode & kartu anggota',
+    icon: CheckoutIcon,
+    href: '/scan?mode=pinjam',
+    badge: 'Fast POS',
+  },
+  {
+    label: 'Pengembalian Buku',
+    desc: 'Proses retur koleksi otomatis',
+    icon: ReturnIcon,
+    href: '/scan?mode=kembali',
+    badge: 'Check-In',
+  },
+  {
+    label: 'Tambah Judul Buku',
+    desc: 'Input katalog & cetak barcode',
+    icon: BookPlusIcon,
+    href: '/admin/buku?action=new',
+    badge: 'Katalog',
+  },
+  {
+    label: 'Registrasi Anggota',
+    desc: 'Buat kartu digital anggota baru',
+    icon: UserAdd02Icon,
+    href: '/admin/anggota?action=new',
+    badge: 'Member',
+  },
+  {
+    label: 'QR Studio Generator',
+    desc: 'Generate QR massal & label rak',
+    icon: QrCodeIcon,
+    href: '/admin/qr-generator',
+    badge: 'Studio',
+  },
 ];
 
 export function DashboardContent() {
   const navigate = useNavigate();
   const [metrics, setMetrics] = useState(defaultMetrics);
   const [dismissedCards, setDismissedCards] = useState<string[]>([]);
+  const [rawOverview, setRawOverview] = useState<any>(null);
 
   useEffect(() => {
     // Fetch live library overview from backend if available
     api.get<any>('/api/admin/reports/overview')
       .then((data) => {
         if (!data) return;
+        setRawOverview(data);
         setMetrics([
           {
             label: 'Total Active Loans',
@@ -49,6 +83,7 @@ export function DashboardContent() {
             note: `${data.peminjamanHariIni || 0} borrowed today`,
             icon: CheckoutIcon,
             iconClassName: 'text-blue-500',
+            trend: 'up',
           },
           {
             label: 'Items Returned Today',
@@ -56,6 +91,7 @@ export function DashboardContent() {
             note: `${data.terlambat || 0} overdue items`,
             icon: ReturnIcon,
             iconClassName: 'text-emerald-500',
+            trend: 'up',
           },
           {
             label: 'Total Members',
@@ -63,6 +99,7 @@ export function DashboardContent() {
             note: 'Active digital library cards',
             icon: UserAdd02Icon,
             iconClassName: 'text-sky-500',
+            trend: 'up',
           },
           {
             label: 'Pending Fines',
@@ -70,6 +107,7 @@ export function DashboardContent() {
             note: 'Rp ' + Number(data.totalDenda || 0).toLocaleString('id-ID') + ' settled',
             icon: BookPlusIcon,
             iconClassName: 'text-amber-500',
+            trend: 'down',
           },
         ]);
       })
@@ -83,99 +121,96 @@ export function DashboardContent() {
   };
 
   return (
-    <>
-      <DashboardHeader onExport={handleExport} />
-      <div className="@container/dashboard space-y-10">
-        <section>
-          <SectionTitle>Top Metrics</SectionTitle>
-          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {metrics.map((metric) => (
-              <MetricCard key={metric.label} {...metric} />
-            ))}
-          </div>
-        </section>
+    <div className="space-y-8 pb-10">
+      {/* Adapted Shadcn Hero Command Card */}
+      <HeroCard
+        activeLoansCount={rawOverview ? rawOverview.aktif : metrics[0]?.value}
+        returnedTodayCount={rawOverview ? rawOverview.pengembalianHariIni : metrics[1]?.value}
+        totalMembersCount={rawOverview ? rawOverview.totalAnggota : metrics[2]?.value}
+        onExportReport={handleExport}
+      />
 
-        <section>
-          <SectionTitle>Quick Actions</SectionTitle>
-          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-            {quickActions.map((action) => (
-              <Card
-                key={action.label}
-                onClick={() => navigate(action.href)}
-                className="bg-secondary text-secondary-foreground cursor-pointer rounded-xl py-0 shadow-xs border-border/50 transition-all hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] hover:-translate-y-0.5 active:scale-[0.98]"
-              >
-                <CardContent className="flex h-full items-center justify-between p-3.5">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="bg-background flex size-10 shrink-0 items-center justify-center rounded-lg shadow-xs text-primary">
-                      <action.icon className="size-5" />
-                    </div>
-                    <span className="text-secondary-foreground/90 text-sm font-medium truncate">
-                      {action.label}
-                    </span>
-                  </div>
-                  <ArrowDown01Icon className="text-muted-foreground size-5 -rotate-90 shrink-0 transition-transform duration-200 ease-out group-hover:translate-x-0.5 motion-reduce:transform-none" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
+      {/* Top Metrics Section */}
+      <section className="space-y-3.5">
+        <div className="flex items-center justify-between">
+          <SectionTitle>Key Performance Indicators</SectionTitle>
+          <span className="text-xs font-medium text-muted-foreground font-mono">Real-time Metrics</span>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {metrics.map((metric) => (
+            <MetricCard key={metric.label} {...metric} />
+          ))}
+        </div>
+      </section>
 
-        <section className="grid grid-cols-1 items-stretch gap-8 @4xl/dashboard:grid-cols-3">
-          <div className="@4xl/dashboard:col-span-2">
-            <CirculationChart />
-          </div>
-          <div className="min-h-84">
-            <CollectionOverview />
-          </div>
-        </section>
+      {/* Quick Action Station */}
+      <section className="space-y-3.5">
+        <div className="flex items-center justify-between">
+          <SectionTitle>Operational Quick Actions</SectionTitle>
+          <span className="text-xs font-medium text-primary hover:underline cursor-pointer" onClick={() => navigate('/admin/qr-generator')}>
+            Open QR Center →
+          </span>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+          {quickActions.map((action) => (
+            <div
+              key={action.label}
+              onClick={() => navigate(action.href)}
+              className="group relative flex flex-col justify-between rounded-xl border border-border/80 bg-card p-4 text-card-foreground shadow-xs cursor-pointer smooth-card hover:border-primary/50 hover:bg-muted/40 cyber-chamfer"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex size-10 items-center justify-center rounded-lg bg-muted text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                  <action.icon className="size-5" />
+                </div>
+                <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-mono font-medium text-muted-foreground group-hover:text-foreground">
+                  {action.badge}
+                </span>
+              </div>
+              <div className="mt-4 space-y-1">
+                <h3 className="text-sm font-semibold tracking-tight text-foreground flex items-center gap-1">
+                  <span>{action.label}</span>
+                  <ArrowUpRight className="size-3.5 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </h3>
+                <p className="text-xs text-muted-foreground line-clamp-1">
+                  {action.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-        <section className="grid grid-cols-1 gap-8 @4xl/dashboard:grid-cols-2">
+      {/* Analytics & Distribution Grid */}
+      <section className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 rounded-xl border border-border/80 bg-card p-5 sm:p-6 shadow-xs smooth-card cyber-chamfer">
+          <CirculationChart />
+        </div>
+        <div className="min-h-84 rounded-xl border border-border/80 bg-card p-5 sm:p-6 shadow-xs smooth-card cyber-chamfer">
+          <CollectionOverview />
+        </div>
+      </section>
+
+      {/* Activity Timeline & Intelligence Feed */}
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="rounded-xl border border-border/80 bg-card p-5 sm:p-6 shadow-xs smooth-card cyber-chamfer">
           <RecentActivity />
+        </div>
+        <div className="rounded-xl border border-border/80 bg-card p-5 sm:p-6 shadow-xs smooth-card cyber-chamfer">
           <LibraryIntelligence
             dismissedCards={dismissedCards}
             onDismiss={(title) => setDismissedCards((prev) => [...prev, title])}
           />
-        </section>
-      </div>
-    </>
+        </div>
+      </section>
+    </div>
   );
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-lg font-medium text-foreground tracking-tight">{children}</h2>;
-}
-
-function DashboardHeader({ onExport }: { onExport: () => void }) {
-  const todayStr = new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-
   return (
-    <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:mb-10 sm:flex-row sm:items-end">
-      <div className="flex flex-col gap-1.5">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Good Day, Librarian
-        </h1>
-        <div className="flex flex-col gap-2 text-sm leading-[1.4] sm:flex-row sm:items-center">
-          <p className="text-primary font-medium">
-            Pustaka QR POS &amp; Management System
-          </p>
-          <div className="bg-muted-foreground hidden size-1.5 rounded-full sm:inline-block" />
-          <p className="text-muted-foreground">{todayStr}</p>
-        </div>
-      </div>
-      <Button
-        variant="secondary"
-        onClick={onExport}
-        className="h-10 gap-2.5 px-4 text-sm font-medium tracking-tight border border-border shadow-xs hover:bg-muted"
-      >
-        <span>Export CSV</span>
-        <Download01Icon className="size-4" />
-      </Button>
-    </div>
+    <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground font-heading">
+      {children}
+    </h2>
   );
 }
 
@@ -184,45 +219,48 @@ function MetricCard({
   iconClassName,
   label,
   note,
-  noteIcon: NoteIcon,
   value,
+  trend,
 }: {
   label: string;
   value: string;
   note: string;
   icon: React.ComponentType<{ className?: string }>;
   iconClassName: string;
-  noteIcon?: React.ComponentType<{ className?: string }>;
+  trend?: 'up' | 'down';
 }) {
-  const noteParts = note.match(/^([+-]?\d+(?:\.\d+)?%?|↓\s*\d+)\s+(.*)$/);
-
   return (
-    <Card className="bg-secondary text-secondary-foreground gap-4 rounded-xl p-4.5 shadow-none border border-border/50">
-      <div className="flex items-center gap-2">
-        <Icon className={cn('size-5 shrink-0', iconClassName)} />
-        <span className="text-secondary-foreground/80 text-xs leading-[1.4] font-medium uppercase tracking-wider">
+    <div className="relative overflow-hidden rounded-xl border border-border/80 bg-card p-5 text-card-foreground shadow-xs smooth-card cyber-chamfer flex flex-col justify-between">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </span>
+        <div className="flex size-8 items-center justify-center rounded-lg bg-muted/80">
+          <Icon className={cn('size-4 shrink-0', iconClassName)} />
+        </div>
       </div>
-      <div className="flex flex-col gap-2 mt-2">
-        <h3 className="text-foreground text-[30px] leading-none font-bold tracking-tight font-mono">
+
+      <div className="mt-3 space-y-1.5">
+        <div className="text-2xl sm:text-3xl font-bold tracking-tight font-mono text-foreground">
           {value}
-        </h3>
-        <p className="flex items-center gap-1 text-xs">
-          {NoteIcon && <NoteIcon className="size-3.5 shrink-0" />}
-          {noteParts ? (
-            <>
-              <span className="text-secondary-foreground font-semibold">
-                {noteParts[1]}
-              </span>{' '}
-              <span className="text-muted-foreground">{noteParts[2]}</span>
-            </>
-          ) : (
-            <span className="text-muted-foreground">{note}</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          {trend === 'up' && (
+            <span className="inline-flex items-center gap-0.5 rounded-sm bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+              <TrendingUp className="size-3" />
+              <span>Live</span>
+            </span>
           )}
-        </p>
+          {trend === 'down' && (
+            <span className="inline-flex items-center gap-0.5 rounded-sm bg-blue-500/10 px-1.5 py-0.5 text-[11px] font-medium text-blue-600 dark:text-blue-400">
+              <CheckCircle2 className="size-3" />
+              <span>Checked</span>
+            </span>
+          )}
+          <span className="truncate">{note}</span>
+        </div>
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -244,9 +282,13 @@ function CollectionOverview() {
 
   return (
     <div className="flex h-full flex-col">
-      <SectionTitle>Collection Overview</SectionTitle>
-      <Card className="border-border mt-5 flex flex-1 flex-col rounded-xl border py-0 shadow-none">
-        <CardContent className="flex h-full flex-col items-center justify-between gap-5 p-4 sm:flex-row sm:items-center sm:gap-8 sm:px-8 @4xl/dashboard:flex-col @4xl/dashboard:gap-5 @4xl/dashboard:px-4">
+      <div className="flex items-center justify-between pb-3 border-b border-border/50">
+        <SectionTitle>Collection Distribution</SectionTitle>
+        <span className="text-xs font-mono text-muted-foreground">{total.toLocaleString()} Books</span>
+      </div>
+
+      <div className="mt-4 flex flex-1 flex-col items-center justify-center gap-6 sm:flex-row sm:justify-between">
+        <div className="shrink-0">
           <CollectionDonutChart
             data={chartData}
             total={total}
@@ -255,53 +297,63 @@ function CollectionOverview() {
             activeIndex={activeIndex}
             onActiveIndexChange={setActiveIndex}
           />
-          <div className="flex w-full flex-col gap-2 sm:max-w-64 @4xl/dashboard:max-w-none">
-            {segments.map((segment, index) => (
-              <div
-                key={segment.label}
-                className={cn(
-                  'text-secondary-foreground grid grid-cols-3 items-center text-sm leading-[1.4] transition-opacity duration-200',
-                  activeIndex !== null && activeIndex !== index && 'opacity-40',
-                )}
-              >
-                <div className="text-secondary-foreground/80 flex min-w-0 items-center gap-2">
-                  <span
-                    className="size-3 shrink-0 rounded-sm"
-                    style={{ backgroundColor: segment.color }}
-                  />
-                  <span className="truncate text-xs font-medium">{segment.label}</span>
-                </div>
-                <span className="text-center font-mono text-xs font-medium tabular-nums">
+        </div>
+
+        <div className="flex w-full flex-col gap-2.5 sm:max-w-xs">
+          {segments.map((segment, index) => (
+            <div
+              key={segment.label}
+              onMouseEnter={() => setActiveIndex(index)}
+              onMouseLeave={() => setActiveIndex(null)}
+              className={cn(
+                'flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition-colors cursor-pointer',
+                activeIndex === index ? 'bg-muted text-foreground font-semibold' : 'text-muted-foreground hover:bg-muted/50',
+              )}
+            >
+              <div className="flex min-w-0 items-center gap-2">
+                <span
+                  className="size-2.5 shrink-0 rounded-sm"
+                  style={{ backgroundColor: segment.color }}
+                />
+                <span className="truncate">{segment.label}</span>
+              </div>
+              <div className="flex items-center gap-2 font-mono tabular-nums">
+                <span className="text-foreground font-medium">
                   {segment.count.toLocaleString()}
                 </span>
-                <span className="text-right font-mono text-xs text-muted-foreground tabular-nums">
-                  {segment.percentage % 1 === 0
-                    ? `${segment.percentage.toFixed(0)}%`
-                    : `${segment.percentage.toFixed(1)}%`}
+                <span className="text-[11px] text-muted-foreground w-10 text-right">
+                  {segment.percentage.toFixed(0)}%
                 </span>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
 function RecentActivity() {
   return (
-    <div>
-      <SectionTitle>Recent Activity</SectionTitle>
-      <div className="mt-5 flex flex-col gap-4">
+    <div className="flex h-full flex-col">
+      <div className="flex items-center justify-between pb-3 border-b border-border/50">
+        <SectionTitle>Recent Live Transactions</SectionTitle>
+        <span className="text-xs font-mono text-muted-foreground">Desk Activity</span>
+      </div>
+
+      <div className="mt-4 flex flex-col gap-3">
         {recentActivity.map((activity) => {
           const ActivityIcon = activity.icon;
           return (
-            <div key={activity.id} className="flex items-center gap-3 p-2.5 rounded-xl border border-border/40 bg-card hover:bg-muted/40 transition-colors">
-              <div className="bg-secondary text-primary flex size-10 shrink-0 items-center justify-center rounded-lg">
-                <ActivityIcon className="size-5" />
+            <div
+              key={activity.id}
+              className="flex items-center gap-3.5 rounded-lg border border-border/50 bg-muted/20 p-3 hover:bg-muted/50 transition-colors"
+            >
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-background text-primary border border-border/60 shadow-2xs">
+                <ActivityIcon className="size-4.5" />
               </div>
               <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
-                <p className="text-sm leading-[1.4] truncate">
+                <p className="text-xs sm:text-sm leading-snug truncate">
                   {activity.parts.map((part, index) => (
                     <span
                       key={`${activity.id}-${index}`}
@@ -318,7 +370,7 @@ function RecentActivity() {
                 </p>
                 <time
                   dateTime={activity.dateTime}
-                  className="text-muted-foreground shrink-0 text-xs font-mono"
+                  className="shrink-0 text-[11px] font-mono text-muted-foreground"
                 >
                   {activity.time}
                 </time>
@@ -344,65 +396,72 @@ function LibraryIntelligence({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between gap-2">
-        <SectionTitle>Library Intelligence</SectionTitle>
-        <span className="text-xs text-primary font-medium">Live Insights</span>
+      <div className="flex items-center justify-between pb-3 border-b border-border/50">
+        <div className="flex items-center gap-2">
+          <SectionTitle>Library Intelligence</SectionTitle>
+          <span className="flex size-2 rounded-full bg-blue-500 animate-pulse" />
+        </div>
+        <span className="text-xs font-medium text-primary">Live Insights</span>
       </div>
-      <div className="mt-5 flex flex-1 flex-col justify-between gap-3">
+
+      <div className="mt-4 flex flex-1 flex-col gap-3">
         {visibleCards.length === 0 ? (
-          <div className="p-6 text-center text-sm text-muted-foreground border border-dashed rounded-xl">
-            All intelligence notifications dismissed.
+          <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-border p-6 text-center text-xs text-muted-foreground">
+            All intelligence notices reviewed and resolved.
           </div>
         ) : (
           visibleCards.map((card) => (
-            <Card
+            <div
               key={card.title}
-              className="bg-secondary text-secondary-foreground rounded-xl py-0 shadow-none border border-border/40"
+              className={cn(
+                'relative flex flex-col gap-2 rounded-lg border p-3.5 transition-all',
+                card.tone === 'insight' && 'border-blue-500/30 bg-blue-500/5',
+                card.tone === 'warning' && 'border-amber-500/30 bg-amber-500/5',
+                card.tone === 'success' && 'border-emerald-500/30 bg-emerald-500/5',
+              )}
             >
-              <CardContent className="flex flex-col gap-2.5 p-3.5">
-                <div className="flex items-center justify-between">
-                  <div
+              <div className="flex items-center justify-between">
+                <div
+                  className={cn(
+                    'flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider',
+                    card.tone === 'insight' && 'text-blue-600 dark:text-blue-400',
+                    card.tone === 'warning' && 'text-amber-600 dark:text-amber-400',
+                    card.tone === 'success' && 'text-emerald-600 dark:text-emerald-400',
+                  )}
+                >
+                  <SparklesIcon className="size-4" />
+                  <span>{card.title}</span>
+                </div>
+                <Button
+                  aria-label={`Dismiss ${card.title}`}
+                  variant="ghost"
+                  size="icon-xs"
+                  className="size-5 text-muted-foreground hover:text-foreground"
+                  onClick={() => onDismiss(card.title)}
+                >
+                  <CancelIcon className="size-3.5" />
+                </Button>
+              </div>
+
+              <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
+                {card.bodyParts.map((part, index) => (
+                  <span
+                    key={`${card.title}-${index}`}
                     className={cn(
-                      'flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider',
-                      card.tone === 'insight' && 'text-blue-600 dark:text-blue-400',
-                      card.tone === 'warning' && 'text-amber-600 dark:text-amber-400',
-                      card.tone === 'success' && 'text-emerald-600 dark:text-emerald-400',
+                      'emphasis' in part &&
+                        part.emphasis &&
+                        'text-foreground font-semibold',
                     )}
                   >
-                    <SparklesIcon className="size-4" />
-                    <span>{card.title}</span>
-                  </div>
-                  <Button
-                    aria-label={`Dismiss ${card.title}`}
-                    variant="ghost"
-                    size="icon-xs"
-                    className="size-5 text-muted-foreground hover:text-foreground"
-                    onClick={() => onDismiss(card.title)}
-                  >
-                    <CancelIcon className="size-4" />
-                  </Button>
-                </div>
-                <div className="flex items-end justify-between gap-3">
-                  <p className="flex-1 text-sm leading-[1.4] text-muted-foreground">
-                    {card.bodyParts.map((part, index) => (
-                      <span
-                        key={`${card.title}-${index}`}
-                        className={cn(
-                          'emphasis' in part &&
-                            part.emphasis &&
-                            'text-foreground font-semibold',
-                        )}
-                      >
-                        {part.text}
-                      </span>
-                    ))}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+                    {part.text}
+                  </span>
+                ))}
+              </p>
+            </div>
           ))
         )}
       </div>
     </div>
   );
 }
+

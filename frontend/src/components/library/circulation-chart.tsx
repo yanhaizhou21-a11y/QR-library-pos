@@ -138,37 +138,39 @@ export function CirculationChart() {
   const [activeLabel, setActiveLabel] = useState<number | null>(null);
   const gradientId = useId().replace(/:/g, '');
 
+  const timeOptions: { id: CirculationTimeframe; label: string }[] = [
+    { id: 'weekly', label: '7 Hari' },
+    { id: 'monthly', label: '30 Hari' },
+    { id: 'yearly', label: '12 Bulan' },
+  ];
+
   return (
     <div className="flex h-full flex-col">
-      <div className="flex w-full items-center justify-between">
-        <h2 className="text-lg font-medium text-foreground">Collection Circulation</h2>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            className={cn(
-              buttonVariants({ variant: 'ghost', size: 'lg' }),
-              'text-accent-foreground capitalize',
-            )}
-          >
-            {timeframe}
-            <ArrowDown01Icon className="size-4 ml-1.5" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32 p-1.5 shadow-lg">
-            <DropdownMenuGroup>
-              {(['weekly', 'monthly', 'yearly'] as const).map((option) => (
-                <DropdownMenuItem
-                  key={option}
-                  onClick={() => setTimeframe(option)}
-                  className={cn(
-                    'rounded-lg capitalize',
-                    timeframe === option && 'text-primary font-medium',
-                  )}
-                >
-                  {option}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-border/50">
+        <div>
+          <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground font-heading">
+            Collection Circulation Velocity
+          </h2>
+          <p className="text-xs text-muted-foreground">Peminjaman vs Pengembalian Koleksi</p>
+        </div>
+
+        {/* Sliding Segmented Control */}
+        <div className="inline-flex rounded-lg border border-border/80 bg-muted/60 p-1 shadow-2xs">
+          {timeOptions.map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => setTimeframe(opt.id)}
+              className={cn(
+                'rounded-md px-3 py-1 text-xs font-semibold transition-all duration-200 cursor-pointer',
+                timeframe === opt.id
+                  ? 'bg-background text-foreground shadow-2xs font-bold'
+                  : 'text-muted-foreground hover:text-foreground',
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <ChartContainer
