@@ -132,10 +132,10 @@ export function CollectionDonutChart({
           aria-live="polite"
           className="animate-in fade-in slide-in-from-bottom-1 animation-duration-300 flex flex-col items-center gap-0.5"
         >
-          <span className="text-foreground text-[23px] leading-normal font-medium tracking-[-0.02em]">
+          <span className="text-foreground text-xl sm:text-2xl leading-tight font-bold font-mono tracking-tight">
             {displayValue.toLocaleString()}
           </span>
-          <span className="text-accent-foreground text-xs leading-[1.45]">
+          <span className="text-muted-foreground text-xs font-medium leading-snug truncate max-w-28">
             {displayLabel}
           </span>
         </div>

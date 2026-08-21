@@ -11,20 +11,11 @@ import {
   XAxis,
 } from 'recharts';
 
-import { buttonVariants } from '@/components/ui/button';
-import { ArrowDown01Icon } from './icons';
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
 } from '@/components/ui/chart';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { circulationData } from '../../data';
 import { cn } from '@/lib/utils';
 
