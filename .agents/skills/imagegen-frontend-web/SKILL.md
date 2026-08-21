@@ -1,11 +1,11 @@
 ---
 name: imagegen-frontend-web
-description: Elite frontend image-direction skill for generating premium, conversion-aware website design references. CRITICAL OUTPUT RULE — generate ONE separate horizontal image FOR EVERY section. A landing page with 8 sections produces 8 images. Never compress multiple sections into one image. Enforces composition variety (not always left-text / right-image), background-image freedom, varied CTAs, varied hero scales (giant / mid / mini minimalist), narrative concept spine, second-read moments, and a single consistent palette across all images. Optimized for landing pages, marketing sites, and product comps that developers or coding models can accurately recreate.
+description: Elite frontend image-direction skill for generating premium, conversion-aware website design references. Generates separate horizontal images per section with composition variety, background-image freedom, varied CTAs, varied hero scales, narrative concept spine, second-read moments, and a single consistent palette across all images. Optimized for landing pages, marketing sites, and product comps that developers or coding models can accurately recreate.
 ---
 
-# HARD OUTPUT RULE — READ FIRST
+# Section-by-Section Output Guidelines
 
-**Generate one separate horizontal image PER section. Always. No exceptions.**
+**Generate one separate horizontal image per section.**
 
 - 1 section requested -> 1 image
 - 4 sections requested -> 4 images
@@ -16,17 +16,15 @@ description: Elite frontend image-direction skill for generating premium, conver
 
 Each image is one section, generated as its own image call. Never combine multiple sections into one frame. Never return a single tall image that contains the whole page.
 
-If you can only render one image at a time, output them sequentially in the same response, one after the other, until every section has its own image. Announce each one ("Section 1 of 8: Hero", "Section 2 of 8: Trust bar", etc.).
+If you can only render one image at a time, output them sequentially in the same response, one after the other, until every section has its own image, labeling each one ("Section 1 of 8: Hero", "Section 2 of 8: Trust bar", etc.).
 
-This rule overrides any model default that wants to collapse output into a single image.
+This rule ensures each section receives a dedicated full-fidelity image.
 
 ---
 
-# HERO COMPOSITION BIAS — READ FIRST
+# Hero Composition Guidelines
 
-The default **left-text / right-image hero is the most overused AI pattern**. It is allowed, but it should not be your first instinct.
-
-Before reaching for it, consider these alternatives and pick whichever fits the brand best:
+The default left-text / right-image hero is often overused. Consider these alternatives and pick whichever fits the brand best:
 - centered over background image
 - bottom-left over image
 - bottom-right over image
@@ -37,11 +35,11 @@ Before reaching for it, consider these alternatives and pick whichever fits the 
 - mini minimalist
 - right-text / left-image (inverted classic)
 
-Use left-text / right-image only when it is genuinely the strongest choice — not by default.
+Use left-text / right-image only when it is genuinely the strongest choice.
 
 ---
 
-# CORE DIRECTIVE: AWWWARDS-LEVEL IMAGE ART DIRECTION
+# Core Directive: High-End Image Art Direction
 You are an elite frontend image art director.
 
 Your job is not to generate generic AI art.
@@ -94,10 +92,9 @@ Default to website design comps.
 - CONVERSION_DISCIPLINE: 8
   `(1 = pure art moodboard, 10 = clear funnel + premium design balance)`
 
-AI Instruction:
-Use these as global defaults unless the user clearly asks for something else.
-Do not ask the user to edit this file.
-Adapt these values dynamically from the prompt.
+Baseline Configuration Usage:
+Use these as global defaults unless the user asks for something else.
+Adapt these values dynamically based on the project brief.
 
 Interpretation:
 - **Adaptation priority**: the user's brief always overrides defaults. Read the prompt carefully, then adjust dials, hero scale, background mode, gradient use, and composition variety to match — never force a recipe that contradicts the brief.
@@ -396,8 +393,8 @@ instead.
 
 ## 5. IMAGE COUNT & PAGE SLICING
 
-### THIS IS THE PRIMARY OUTPUT RULE
-Generate **one separate horizontal image PER section**. Always.
+### Section Image Guidelines
+Generate one separate horizontal image per section.
 
 - never combine multiple sections in a single image
 - never return a single tall slice that contains the whole page
@@ -915,7 +912,7 @@ For minimalist briefs: this rule is suspended. Restraint is the design.
 When the user asks for a frontend design:
 1. infer site type and primary conversion goal
 2. infer number of sections (if unclear, use the defaults from §5: landing page = 6, full website = 8)
-3. **commit out loud** to the section count and announce it ("Generating N horizontal images, one per section")
+3. determine the section count and plan the generations ("Generating N horizontal images, one per section")
 4. plan ONE horizontal image PER SECTION — always separate generations, never collapse
 5. choose Hero Scale for the whole site (giant / mid / mini)
 5. choose a strong visual combination (theme, type, hero arch, section system, motion, narrative spine, second-read moment)

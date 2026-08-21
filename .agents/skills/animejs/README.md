@@ -9,22 +9,12 @@ A comprehensive Claude Code skill for [Anime.js v4](https://animejs.com/) - a li
 Install using the [skills CLI](https://skills.sh/docs/cli):
 
 ```bash
-npx skills add bowtiedswan/animejs-skills
+npx skills@latest add bowtiedswan/animejs-skills
 ```
 
-### Option 2: Curl (one-liner)
+### Option 2: Manual Installation
 
-Run this in your terminal:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/BowTiedSwan/animejs-skills/main/install.sh | bash
-```
-
-Auto-detects Claude Code and installs the skill to `~/.claude/skills/animejs/`.
-
-### Option 3: Manual
-
-Copy the `SKILL.md` and `references/` folder to your Claude skills directory:
+Copy the `SKILL.md` and `references/` folder to your skills directory:
 
 ```bash
 mkdir -p ~/.claude/skills/animejs

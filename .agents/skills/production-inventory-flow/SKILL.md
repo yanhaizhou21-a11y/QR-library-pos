@@ -18,8 +18,8 @@ Raw Material (Sawah/field — CBKS)
 
 Shrinkage is **expected and must be recorded** at each transformation step, not treated as a bug. Worked example from source notes: 100kg raw → 80kg after drying (20% loss) → 75kg after cleaning (5kg further loss) = 25% total production shrinkage. Any BOM/work-order screen needs a place to record expected vs. actual yield.
 
-## Document-control checkpoints (don't add more than this without asking)
-Only **two** points in the pipeline require a formal supporting document:
+## Document-control checkpoints (Human-in-the-Loop required)
+Only **two** points in the pipeline require a formal supporting document and explicit operator verification:
 1. **Raw material intake** — Purchase Order / Proof of Payment.
 2. **Finished Goods release** — Goods Receipt Note / Production Report.
 
@@ -36,6 +36,7 @@ Backing tables: `transactions` (`id, type, qty, status`), `approval_requests` (`
 | `REJECTED` | Staff Finance clicks Reject + note | Insert `approval_logs`, notify submitter; resubmission returns it to `PENDING` |
 
 ## Open questions to check before locking behavior (see `PRD.md §11`)
+- **Human-in-the-Loop Confirmation:** All stock-affecting operations, irreversible ledger syncs, and workflow transitions must require explicit human confirmation and role-based approval.
 - **OQ-2:** the exact 3×3 sub-step breakdown of production hasn't been fully confirmed against the worked example (which only shows 2–3 sub-steps, not a clean 3×3 grid). Don't hard-code a rigid 3×3 UI without checking with the Production department first.
 - **OQ-4:** there are two versions of several inventory/production tables in the source docs (legacy Odoo/HasMicro-style mixed-case notes vs. the cleaned snake_case schema). Build against the snake_case schema in `PRD.md §6` unless told otherwise.
 

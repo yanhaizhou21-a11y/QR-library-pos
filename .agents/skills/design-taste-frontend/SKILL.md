@@ -48,7 +48,7 @@ After the design read, set three dials. Every layout, motion, and density decisi
 * **`MOTION_INTENSITY: 6`** - 1 = Static, 10 = Cinematic / Physics
 * **`VISUAL_DENSITY: 4`** - 1 = Art Gallery / Airy, 10 = Cockpit / Packed Data
 
-**Baseline:** `8 / 6 / 4`. Use these unless the design read overrides them. Do not ask the user to edit this file - overrides happen conversationally.
+**Baseline:** `8 / 6 / 4`. Use these unless the design read overrides them. Overrides happen conversationally based on user requirements. **Human-in-the-Loop Confirmation:** Always obtain explicit user confirmation before executing any automated commands, package installations, or modifying files.
 
 ### 1.A Dial Inference (design read → dial values)
 | Signal | VARIANCE | MOTION | DENSITY |
@@ -96,7 +96,7 @@ Once you have the design read (Section 0) and dials (Section 1), pick the right 
 | US public-sector / trust-first | `uswds` | Same |
 | Fast local-business / agency MVP | Bootstrap 5.3 | Boring, fast, works |
 | Modern accessible React foundation | `@radix-ui/themes` | Primitives + polished theme |
-| Modern SaaS where you own the components | shadcn/ui (`npx shadcn@latest add ...`) | You own the code, easy to customise; never ship default state |
+| Modern SaaS where you own the components | shadcn/ui (`npx shadcn@2.1.8 add ...`) | You own the code, easy to customise; never ship default state |
 | Tailwind-based modern SaaS / AI marketing | Tailwind v4 utilities + `dark:` variant | Default for indie + small team builds |
 
 **Honesty rule:** if the brief reads as one of the systems above, install and use the **official** package. Do not recreate its CSS by hand. Do not import a system's tokens but then override 90% of them.
@@ -153,8 +153,9 @@ Discouraged by default in code, markup, and visible text. Replace symbols with i
 * **Viewport Stability:** NEVER use `h-screen` for full-height Hero sections. ALWAYS use `min-h-[100dvh]` to prevent layout jumping on mobile (iOS Safari address bar).
 * **Grid over Flex-Math:** NEVER use complex flexbox percentage math (`w-[calc(33%-1rem)]`). ALWAYS use CSS Grid (`grid grid-cols-1 md:grid-cols-3 gap-6`).
 
-### 3.F Dependency Verification (mandatory)
+### 3.F Dependency Verification & Human-in-the-Loop Safety (mandatory)
 Before importing ANY 3rd-party library, check `package.json`. If the package is missing, output the install command first. **Never** assume a library exists.
+**Human-in-the-Loop Confirmation:** Always require explicit user confirmation before executing package installation commands, running automated CLI tools, or applying destructive file modifications.
 
 ---
 
@@ -1003,8 +1004,8 @@ npm install @carbon/react @carbon/styles
 npm install @radix-ui/themes
 
 # shadcn/ui (open code, owned components)
-npx shadcn@latest init
-npx shadcn@latest add button card badge separator input
+npx shadcn@2.1.8 init
+npx shadcn@2.1.8 add button card badge separator input
 
 # Primer CSS (GitHub product/devtool UI)
 npm install --save @primer/css
