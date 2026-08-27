@@ -6,43 +6,91 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [info, setInfo] = useState<string | null>(null);
   const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const submit = async (e: FormEvent) => {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setBusy(true);
     setError('');
+    setInfo(null);
+    setLoading(true);
+
     try {
-      const d = await api.post<{ message: string; resetToken?: string }>('/auth/forgot-password', { email });
-      setInfo(
-        d.resetToken
-          ? `${d.message} Berikut tautan untuk pengembangan (mode demo): /reset-password?token=${d.resetToken}`
-          : d.message,
-      );
+      const data = await api.post<{ message: string; resetToken?: string }>('/auth/forgot-password', { email });
+      setInfo(data.message || 'Link reset password telah dikirim ke email Anda');
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'Gagal mengirim link reset password');
     } finally {
-      setBusy(false);
+      setLoading(false);
     }
-  };
+  }
 
   return (
-    <div className="container-narrow page">
-      <div className="auth-wrap">
-        <h2>Pulihkan Kata Sandi</h2>
-        <p className="muted small">Masukkan email terdaftar, tautan reset akan dikirim.</p>
-        {info && <div className="alert alert-ok">{info}</div>}
-        {error && <div className="alert alert-error">{error}</div>}
-        <form className="form" onSubmit={submit}>
-          <div className="field">
-            <label>Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
-          </div>
-          <button className="btn btn-primary btn-block" disabled={busy}>{busy ? 'Mengirim...' : 'Kirim Tautan Reset'}</button>
-        </form>
-        <p className="small mt-2" style={{ marginBottom: 0 }}>
-          <Link to="/masuk">← Kembali ke masuk</Link>
-        </p>
+    <div style={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      background: 'var(--bg-secondary)',
+      padding: 'var(--space-4)'
+    }}>
+      <div className="card" style={{ maxWidth: '420px', width: '100%' }}>
+        <div className="card-header">
+          <h1 className="card-title" style={{ fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-2)' }}>
+            Lupa Password
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+            Masukkan email Anda untuk menerima link reset password
+          </p>
+        </div>
+
+        <div className="card-body">
+          {error && (
+            <div className="alert alert-error" style={{ marginBottom: 'var(--space-5)' }}>
+              {error}
+            </div>
+          )}
+
+          {info && (
+            <div className="alert alert-success" style={{ marginBottom: 'var(--space-5)' }}>
+              {info}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label className="form-label" htmlFor="email">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                className="form-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="nama@contoh.com"
+                required
+                autoComplete="email"
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              style={{ width: '100%', marginBottom: 'var(--space-4)' }}
+              disabled={loading}
+            >
+              {loading ? 'Mengirim...' : 'Kirim Link Reset'}
+            </button>
+
+            <Link 
+              to="/login" 
+              className="btn btn-secondary"
+              style={{ width: '100%', display: 'inline-flex' }}
+            >
+              Kembali ke Login
+            </Link>
+          </form>
+        </div>
       </div>
     </div>
   );

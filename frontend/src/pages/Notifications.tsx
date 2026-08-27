@@ -17,12 +17,13 @@ export default function Notifications() {
   const [notifs, setNotifs] = useState<Notif[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const load = () =>
+  const load = () => {
     api
       .get<{ notifications: Notif[] }>('/notifications/me')
-      .then((d) => setNotifs(d.notifications))
+      .then((d: any) => setNotifs(d.notifications))
       .catch(() => undefined)
       .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     load();
@@ -45,9 +46,13 @@ export default function Notifications() {
       <div className="page-head flex-between">
         <div>
           <h2>Notifikasi</h2>
-          <p className="muted small" style={{ margin: 0 }}>Reminder, reservasi, dan info transaksi</p>
+          <p className="muted small" style={{ margin: 0 }}>
+            Reminder, reservasi, dan info transaksi
+          </p>
         </div>
-        <button className="btn btn-sm" onClick={readAll}>Tandai semua dibaca</button>
+        <button className="btn btn-sm" onClick={readAll}>
+          Tandai semua dibaca
+        </button>
       </div>
       {notifs.length === 0 ? (
         <div className="empty">Belum ada notifikasi.</div>
@@ -57,7 +62,11 @@ export default function Notifications() {
             <div
               key={n.id}
               className="card"
-              style={n.is_read ? { opacity: 0.65 } : { borderColor: 'var(--primary)', cursor: 'pointer' }}
+              style={
+                n.is_read
+                  ? { opacity: 0.65 }
+                  : { borderColor: 'var(--primary)', cursor: 'pointer' }
+              }
               onClick={() => !n.is_read && markRead(n.id)}
             >
               <div className="flex gap-sm" style={{ alignItems: 'flex-start' }}>
@@ -73,7 +82,9 @@ export default function Notifications() {
         </div>
       )}
       <div className="mt-2">
-        <Link to="/pinjaman" className="btn">Lihat Pinjaman →</Link>
+        <Link to="/pinjaman" className="btn">
+          Lihat Pinjaman →
+        </Link>
       </div>
     </div>
   );

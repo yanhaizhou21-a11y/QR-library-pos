@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { api, Book } from '../api/client';
+import { api } from '../api/client';
+import type { Book } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { Cover, Stars, fmtDate } from '../components/ui';
 
@@ -19,7 +20,7 @@ export default function BookDetail() {
   const { user } = useAuth();
   const [book, setBook] = useState<Book | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [antrian, setAntrian] = useState(0);
+  const [antrianReservasi, setAntrianReservasi] = useState(0);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ type: 'error' | 'ok'; text: string } | null>(null);
@@ -28,13 +29,9 @@ export default function BookDetail() {
 
   useEffect(() => {
     api
-      .get<{ book: Book; reviews: Review[]; antrianReservasi: number }>(`/books/${id}`)
-      .then((d) => {
-        setBook(d.book);
-        setReviews(d.reviews);
-        setAntrian(d.antrianReservasi);
-      })
-      .catch((e) => setMsg({ type: 'error', text: e.message }))
+      .get<any>(`/books/${id}`)
+      .then((d: any) => { setBook(d); setReviews([]); setAntrianReservasi(0); })
+      .catch((e: any) => setMsg({ type: 'error', text: e.message }))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -59,9 +56,9 @@ export default function BookDetail() {
     try {
       await api.post(`/books/${id}/reviews`, { rating, ulasan });
       setUlasan('');
-      const d = await api.get<{ book: Book; reviews: Review[] }>(`/books/${id}`);
-      setBook(d.book);
-      setReviews(d.reviews);
+      const d = await api.get<any>(`/books/${id}`);
+      setBook(d);
+      setReviews(d.reviews || []);
       setMsg({ type: 'ok', text: 'Ulasan tersimpan.' });
     } catch (e: any) {
       setMsg({ type: 'error', text: e.message });
@@ -75,7 +72,7 @@ export default function BookDetail() {
 
   return (
     <div className="container page">
-      <Link to="/katalog" className="small">← Kembali ke katalog</Link>
+      <Link to="/katalog" className="small">&larr; Kembali ke katalog</Link>
       {msg && <div className={`alert alert-${msg.type} mt-2`}>{msg.text}</div>}
       <div className="card mt-1">
         <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
@@ -96,15 +93,15 @@ export default function BookDetail() {
               </span>
               {book.kategori && <span className="badge badge-blue">{book.kategori}</span>}
               {book.lokasi_rak && <span className="badge badge-gray">Rak {book.lokasi_rak}</span>}
-              {antrian > 0 && <span className="badge badge-amber">{antrian} antrian reservasi</span>}
+              {antrianReservasi > 0 && <span className="badge badge-amber">{antrianReservasi} antrian reservasi</span>}
             </div>
             <div className="flex-wrap mt-2">
               <Link to="/scan" className="btn btn-primary">
-                📷 Pinjam Lewat Scan QR
+                Pinjam Lewat Scan
               </Link>
-              {book.stok_tersedia <= 0 && (
+              {book.stok_tersedia === 0 && (
                 <button className="btn" onClick={reserve} disabled={busy}>
-                  🔖 Reservasi
+                  Reservasi
                 </button>
               )}
             </div>

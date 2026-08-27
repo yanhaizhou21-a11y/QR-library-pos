@@ -1,6 +1,7 @@
-import { useEffect, useState, useRef } from 'react';
+﻿import { useEffect, useState, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { api, Book } from '../api/client';
+import { api } from '../api/client';
+import type { Book } from '../api/client';
 import { Cover, Stars } from '../components/ui';
 
 export default function Catalog() {
@@ -15,7 +16,7 @@ export default function Catalog() {
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    api.get<{ kategori: string[] }>('/books/kategori').then((d) => setKategories(d.kategori)).catch(() => undefined);
+    api.get<{ kategori: string[] }>('/books/kategori').then((d: any) => setKategories(d.kategori)).catch(() => undefined);
   }, []);
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function Catalog() {
     sp.set('limit', '60');
     api
       .get<{ books: Book[]; total: number }>(`/books?${sp.toString()}`)
-      .then((d) => {
+      .then((d: any) => {
         setBooks(d.books);
         setTotal(d.total);
       })
@@ -52,7 +53,7 @@ export default function Catalog() {
           </p>
         </div>
         <Link to="/scan" className="btn btn-primary">
-          📷 Pindai QR
+          Pindai
         </Link>
       </div>
 
@@ -73,7 +74,7 @@ export default function Catalog() {
         <div className="flex-wrap mt-1" style={{ marginTop: 12 }}>
           <button
             className={`btn btn-sm ${!kategori ? 'btn-primary' : ''}`}
-            onClick={() => setParams(kategori ? (q ? { q } : {}) : { q })}
+            onClick={() => setParams(q ? { q } : {})}
           >
             Semua
           </button>

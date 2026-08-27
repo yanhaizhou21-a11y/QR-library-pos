@@ -25,18 +25,18 @@ export default function MyLoans() {
   useEffect(() => {
     api
       .get<{ active: Loan[]; history: Loan[] }>('/loans/me')
-      .then((d) => {
+      .then((d: any) => {
         setActive(d.active);
         setHistory(d.history);
       })
-      .catch((e) => setMsg(e.message))
+      .catch((e: any) => setMsg(e.message))
       .finally(() => setLoading(false));
   }, []);
 
   const exportCsv = () => {
     api
       .download('/loans/me/export', `riwayat-${user?.no_anggota || user?.id}.csv`)
-      .catch((e) => setMsg(e.message));
+      .catch((e: any) => setMsg(e.message));
   };
 
   const loanRow = (l: Loan) => (
@@ -52,11 +52,16 @@ export default function MyLoans() {
       </td>
       <td>#{l.id}</td>
       <td>{fmtDate(l.tanggal_pinjam)}</td>
-      <td className={l.status === 'terlambat' ? 'text-danger' : ''} style={l.status === 'terlambat' ? { color: 'var(--danger)', fontWeight: 600 } : undefined}>
+      <td
+        className={l.status === 'terlambat' ? 'text-danger' : ''}
+        style={l.status === 'terlambat' ? { color: 'var(--danger)', fontWeight: 600 } : undefined}
+      >
         {fmtDate(l.tanggal_jatuh_tempo)}
       </td>
       <td>{fmtDate(l.tanggal_kembali)}</td>
-      <td><StatusBadge status={l.status} /></td>
+      <td>
+        <StatusBadge status={l.status} />
+      </td>
       <td className="text-right">{l.denda > 0 ? rupiah(l.denda) : '-'}</td>
     </tr>
   );
@@ -68,20 +73,34 @@ export default function MyLoans() {
       <div className="page-head flex-between">
         <div>
           <h2>Pinjaman Saya</h2>
-          <p className="muted small" style={{ margin: 0 }}>Transaksi dan riwayat peminjaman Anda</p>
+          <p className="muted small" style={{ margin: 0 }}>
+            Transaksi dan riwayat peminjaman Anda
+          </p>
         </div>
-        <button className="btn" onClick={exportCsv}>⬇️ Unduh Riwayat (CSV)</button>
+        <button className="btn" onClick={exportCsv}>
+          ⬇️ Unduh Riwayat (CSV)
+        </button>
       </div>
       {msg && <div className="alert alert-error">{msg}</div>}
 
       <h3 className="mt-2">Sedang Dipinjam ({active.length})</h3>
       {active.length === 0 ? (
-        <div className="empty">Tidak ada pinjaman aktif. <Link to="/katalog">Pilih buku</Link> lalu scan QR untuk meminjam.</div>
+        <div className="empty">
+          Tidak ada pinjaman aktif. <Link to="/katalog">Pilih buku</Link> lalu scan untuk meminjam.
+        </div>
       ) : (
         <div className="card table-wrap">
           <table>
             <thead>
-              <tr><th>Buku</th><th>No.</th><th>Tanggal Pinjam</th><th>Jatuh Tempo</th><th>Kembali</th><th>Status</th><th className="text-right">Denda</th></tr>
+              <tr>
+                <th>Buku</th>
+                <th>No.</th>
+                <th>Tanggal Pinjam</th>
+                <th>Jatuh Tempo</th>
+                <th>Kembali</th>
+                <th>Status</th>
+                <th className="text-right">Denda</th>
+              </tr>
             </thead>
             <tbody>{active.map(loanRow)}</tbody>
           </table>
@@ -95,7 +114,15 @@ export default function MyLoans() {
         <div className="card table-wrap">
           <table>
             <thead>
-              <tr><th>Buku</th><th>No.</th><th>Tanggal Pinjam</th><th>Jatuh Tempo</th><th>Kembali</th><th>Status</th><th className="text-right">Denda</th></tr>
+              <tr>
+                <th>Buku</th>
+                <th>No.</th>
+                <th>Tanggal Pinjam</th>
+                <th>Jatuh Tempo</th>
+                <th>Kembali</th>
+                <th>Status</th>
+                <th className="text-right">Denda</th>
+              </tr>
             </thead>
             <tbody>{history.map(loanRow)}</tbody>
           </table>
