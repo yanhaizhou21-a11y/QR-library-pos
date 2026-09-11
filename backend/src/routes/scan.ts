@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { get } from '../db';
 import { parseCode, memberCode, bookCode } from '../utils/qr';
-import { authRequired, AuthUser } from '../middleware/auth';
+import { authRequired, adminRequired, AuthUser } from '../middleware/auth';
 import { asyncHandler } from '../middleware/error';
 import { borrowBook, returnBook } from '../services/loans';
 
@@ -46,7 +46,7 @@ scanRouter.post('/borrow', authRequired, asyncHandler(async (req, res) => {
   res.status(201).json({ ok: true, loan: result });
 }));
 
-scanRouter.post('/borrow-as', authRequired, asyncHandler(async (req, res) => {
+scanRouter.post('/borrow-as', authRequired, adminRequired, asyncHandler(async (req, res) => {
   const { bookId, memberId } = req.body || {};
   if (!Number.isInteger(Number(bookId))) return res.status(400).json({ error: 'Pilih buku yang benar.' });
   const result = borrowBook(Number(memberId), Number(bookId));
