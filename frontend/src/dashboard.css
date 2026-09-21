@@ -1,3 +1,6 @@
+/* Import premium fonts for awwwards-style typography */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap');
+
 @import "tailwindcss";
 
 @layer base {
@@ -17,6 +20,7 @@
     --ease-linear: linear;
     --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1);
     --ease-bounce-strong: cubic-bezier(0.34, 3.85, 0.64, 1);
+    --ease-expo-out: cubic-bezier(0.19, 1, 0.22, 1);
 
     --distance-micro: 4px;
     --distance-small: 6px;
@@ -33,95 +37,95 @@
     --blur-medium: 3px;
     --blur-large: 8px;
 
-    /* ── Modern Clean (Light) ─────────────────────────────────── */
-    --background: #f8fafc;
-    --foreground: #0f172a;
+    /* ── Premium Light Theme (Awwwards Style) ───────────────── */
+    --background: #fafafa;
+    --foreground: #0a0a0a;
 
     --card: #ffffff;
-    --card-foreground: #0f172a;
+    --card-foreground: #0a0a0a;
 
     --popover: #ffffff;
-    --popover-foreground: #0f172a;
+    --popover-foreground: #0a0a0a;
 
-    --primary: #2563eb;
+    --primary: #0a0a0a;
     --primary-foreground: #ffffff;
 
-    --secondary: #ffffff;
-    --secondary-foreground: #1e293b;
+    --secondary: #f5f5f5;
+    --secondary-foreground: #0a0a0a;
 
-    --muted: #f1f5f9;
-    --muted-foreground: #475569;
+    --muted: #f0f0f0;
+    --muted-foreground: #737373;
 
-    --accent: #eff6ff;
-    --accent-foreground: #1d4ed8;
+    --accent: #2563eb;
+    --accent-foreground: #ffffff;
 
-    --destructive: #ef4444;
+    --destructive: #dc2626;
     --destructive-foreground: #ffffff;
 
-    --border: #e2e8f0;
-    --border-light: #f1f5f9;
+    --border: #e5e5e5;
+    --border-light: #f5f5f5;
     --input: #ffffff;
-    --ring: #2563eb;
+    --ring: #0a0a0a;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
     --sidebar: #ffffff;
-    --sidebar-foreground: #0f172a;
-    --sidebar-primary: #2563eb;
+    --sidebar-foreground: #0a0a0a;
+    --sidebar-primary: #0a0a0a;
     --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #f1f5f9;
-    --sidebar-accent-foreground: #0f172a;
-    --sidebar-border: #e2e8f0;
-    --sidebar-ring: #2563eb;
+    --sidebar-accent: #f5f5f5;
+    --sidebar-accent-foreground: #0a0a0a;
+    --sidebar-border: #e5e5e5;
+    --sidebar-ring: #0a0a0a;
 
     --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-heading: 'Outfit', sans-serif;
+    --font-heading: 'Playfair Display', Georgia, serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
     --font-serif: 'Playfair Display', Georgia, serif;
   }
 
-  /* ── Modern Clean (Dark) ─────────────────────────────────── */
+  /* ── Premium Dark (Awwwards Style) ───────────────────────── */
   .dark,
   [data-theme='dark'] {
-    --background: #090d16;
-    --foreground: #f8fafc;
+    --background: #050505;
+    --foreground: #fafafa;
 
-    --card: #0f172a;
-    --card-foreground: #f8fafc;
+    --card: #0a0a0a;
+    --card-foreground: #fafafa;
 
-    --popover: #0f172a;
-    --popover-foreground: #f8fafc;
+    --popover: #0a0a0a;
+    --popover-foreground: #fafafa;
 
-    --primary: #3b82f6;
-    --primary-foreground: #ffffff;
+    --primary: #ffffff;
+    --primary-foreground: #050505;
 
-    --secondary: #131d31;
-    --secondary-foreground: #f1f5f9;
+    --secondary: #171717;
+    --secondary-foreground: #fafafa;
 
-    --muted: #1e293b;
-    --muted-foreground: #94a3b8;
+    --muted: #1a1a1a;
+    --muted-foreground: #a3a3a3;
 
-    --accent: #172554;
-    --accent-foreground: #93c5fd;
+    --accent: #3b82f6;
+    --accent-foreground: #ffffff;
 
-    --destructive: #f87171;
+    --destructive: #ef4444;
     --destructive-foreground: #ffffff;
 
-    --border: #1e293b;
-    --border-light: #162032;
-    --input: #131d31;
-    --ring: #3b82f6;
+    --border: #1f1f1f;
+    --border-light: #121212;
+    --input: #0a0a0a;
+    --ring: #ffffff;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    --sidebar: #090d16;
-    --sidebar-foreground: #f8fafc;
-    --sidebar-primary: #3b82f6;
-    --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #1e293b;
-    --sidebar-accent-foreground: #f8fafc;
-    --sidebar-border: #1e293b;
-    --sidebar-ring: #3b82f6;
+    --sidebar: #050505;
+    --sidebar-foreground: #fafafa;
+    --sidebar-primary: #ffffff;
+    --sidebar-primary-foreground: #050505;
+    --sidebar-accent: #171717;
+    --sidebar-accent-foreground: #fafafa;
+    --sidebar-border: #1f1f1f;
+    --sidebar-ring: #ffffff;
   }
 
   /* ── Minimalist Monochrome (Light) ───────────────────────── */
@@ -313,22 +317,109 @@
   );
 }
 
-/* Smooth card transitions conforming to transitions-dev */
+/* Awwwards-style smooth animations */
 .smooth-card {
-  transition: transform var(--duration-fast) var(--ease-smooth-out),
-              box-shadow var(--duration-fast) var(--ease-smooth-out),
-              border-color var(--duration-fast) var(--ease-smooth-out),
-              background-color var(--duration-fast) var(--ease-smooth-out);
+  transition: transform var(--duration-medium) var(--ease-expo-out),
+              box-shadow var(--duration-medium) var(--ease-expo-out),
+              border-color var(--duration-quick) var(--ease-smooth-out),
+              background-color var(--duration-quick) var(--ease-smooth-out);
 }
 
 .smooth-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, var(--foreground) 0%, var(--muted-foreground) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Subtle glow effects */
+.glow-primary {
+  box-shadow: 0 0 40px -10px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .glow-primary {
+  box-shadow: 0 0 40px -10px rgba(255, 255, 255, 0.1);
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme='dark'] .glass {
+  background: rgba(10, 10, 10, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Premium button styles */
+.btn-premium {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--duration-medium) var(--ease-expo-out);
+}
+
+.btn-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--duration-slow) var(--ease-expo-out);
+}
+
+.btn-premium:hover::before {
+  left: 100%;
+}
+
+/* Page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--duration-slow) var(--ease-expo-out),
+              transform var(--duration-slow) var(--ease-expo-out);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .smooth-card,
   .smooth-card:hover,
-  .library-dashboard {
+  .library-dashboard,
+  .btn-premium,
+  .btn-premium::before {
     transition: none !important;
     transform: none !important;
   }

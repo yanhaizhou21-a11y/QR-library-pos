@@ -1,8 +1,36 @@
+```
+# Dependencies
 node_modules/
+
+# Build artifacts
 dist/
-backend/data/
-frontend/dist/
-*.log
+build/
+*.js.map
+
+# Environment
 .env
-.DS_Store
-debug-frontend/
+.env.local
+.env.*
+
+# Logs
+*.log
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Python (if applicable)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+.env
+.env.local
+.env.*
+```
