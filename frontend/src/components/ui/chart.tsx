@@ -12,9 +12,9 @@ export type ChartConfig = Record<
   }
 >;
 
-interface ChartContainerProps extends React.HTMLAttributes<HTMLDivElement> {
+interface ChartContainerProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
   config: ChartConfig;
-  children: React.ReactNode;
+  children: React.ReactElement;
 }
 
 export const ChartContainer = React.forwardRef<
@@ -35,7 +35,7 @@ export const ChartContainer = React.forwardRef<
       {...props}
     >
       <ResponsiveContainer width="100%" height="100%">
-        {children as React.ReactElement}
+        {children}
       </ResponsiveContainer>
     </div>
   );
